@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokopia Pokémon Database</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f5f0e8;--card:rgba(255,255,255,.72);--cb:rgba(255,255,255,.9);--pu:#9b6fd4;--pd:#7a52b0;--pk:#e87aab;--tx:#3a3a3a;--mu:#7a7a7a;--sh:0 8px 32px rgba(100,70,150,.10);--shh:0 16px 48px rgba(100,70,150,.18)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+  .blobs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+  .b1{width:560px;height:560px;background:#d4e8b0;top:-140px;left:-140px}
+  .b2{width:420px;height:420px;background:#ead4a8;top:20%;right:-100px}
+  .b3{width:350px;height:350px;background:#d4e0e8;bottom:10%;left:5%}
+  .b4{width:300px;height:300px;background:#f0d4e4;bottom:-80px;right:20%}
+  .wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 24px 60px}
+  header{text-align:center;padding:52px 0 36px}
+  .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
+  .logo-badge{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pu);background:rgba(155,111,212,.10);border:1.5px solid rgba(155,111,212,.22);border-radius:40px;padding:5px 16px}
+  .logo-title{display:flex;flex-direction:column;align-items:center;line-height:1;gap:2px}
+  .logo-poke{font-size:clamp(1rem,3vw,1.4rem);font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--pk);text-shadow:0 2px 8px rgba(232,122,171,.25)}
+  .logo-main{font-size:clamp(3rem,10vw,6rem);font-weight:900;letter-spacing:-.03em;line-height:1;background:linear-gradient(135deg,#9b6fd4 0%,#e87aab 50%,#9b6fd4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 3px 12px rgba(155,111,212,.3));paint-order:stroke fill}
+  .logo-sub{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mu)}
+  .sub{font-size:14px;color:var(--mu);font-weight:600;max-width:560px;margin:0 auto;line-height:1.6;text-align:center}
+  .panel{background:var(--card);border:1.5px solid var(--cb);border-radius:20px;box-shadow:var(--sh);backdrop-filter:blur(16px);padding:24px 28px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:28px}
+  .sg{display:flex;flex-direction:column;gap:6px;flex:1;min-width:150px}
+  .sg label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--pk)}
+  .sg select,.sg input{font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;color:var(--tx);background:rgba(255,255,255,.8);border:1.5px solid rgba(155,111,212,.2);border-radius:12px;padding:10px 14px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+  .sg select:focus,.sg input:focus{border-color:var(--pu);box-shadow:0 0 0 3px rgba(155,111,212,.12)}
+  .brow{display:flex;gap:10px;align-items:flex-end;width:100%}
+  .btn{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:12px;padding:11px 22px;cursor:pointer;transition:transform .15s}
+  .btn:active{transform:scale(.97)}
+  .bp{background:var(--pu);color:#fff;box-shadow:0 4px 16px rgba(155,111,212,.35)}
+  .bp:hover{background:var(--pd)}
+  .bs{background:rgba(155,111,212,.1);color:var(--pu);border:1.5px solid rgba(155,111,212,.25)}
+  .bs:hover{background:rgba(155,111,212,.18)}
+  .rbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding:0 4px;flex-wrap:wrap;gap:8px}
+  .rc{font-size:13px;font-weight:700;color:var(--mu)}.rc strong{color:var(--pu)}
+  .rs{font-size:12px;color:var(--mu);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+  .card{background:var(--card);border:1.5px solid var(--cb);border-radius:20px;box-shadow:var(--sh);backdrop-filter:blur(16px);padding:18px 15px 15px;display:flex;flex-direction:column;gap:7px;animation:fu .3s ease both;transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shh)}
+  .card.uc{border-color:rgba(155,111,212,.4);background:rgba(240,232,255,.7)}
+  @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .cnum{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--mu);text-transform:uppercase}
+  .sw{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,rgba(212,232,160,.4),rgba(212,224,232,.4));display:flex;align-items:center;justify-content:center;align-self:center}
+  .sw img{width:60px;height:60px;image-rendering:pixelated;object-fit:contain}
+  .fp{width:44px;height:44px;border-radius:50%;background:rgba(155,111,212,.12);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .cn{font-size:15px;font-weight:800;text-align:center;line-height:1.2;margin-bottom:1px}
+  .cn.uq{color:var(--pu)}
+  .ctag{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:rgba(155,111,212,.15);color:var(--pu);border-radius:20px;padding:2px 8px;text-align:center}
+  .ctag.gold{background:rgba(220,170,40,.18);color:#7a5800;border:1px solid rgba(220,170,40,.35)}
+  .sl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-top:2px}
+  .bgs{display:flex;flex-wrap:wrap;gap:4px}
+  .bi{display:inline-flex;align-items:center;gap:4px;padding:3px 8px 3px 5px;border-radius:30px;font-size:11px;font-weight:700;white-space:nowrap}
+  .bi img{width:14px;height:14px;object-fit:contain;flex-shrink:0}
+  .bunk{background:rgba(122,122,122,.1);color:var(--mu);border:1px solid rgba(122,122,122,.2)}
+  .bgrow{background:rgba(100,190,90,.15);color:#4a8c3f;border:1px solid rgba(100,190,90,.3)}
+  .bburn{background:rgba(240,120,60,.15);color:#b85020;border:1px solid rgba(240,120,60,.3)}
+  .bwater{background:rgba(80,160,230,.15);color:#2060a0;border:1px solid rgba(80,160,230,.3)}
+  .bfly{background:rgba(180,160,230,.15);color:#6050a0;border:1px solid rgba(180,160,230,.3)}
+  .btrade{background:rgba(230,180,60,.15);color:#8a6010;border:1px solid rgba(230,180,60,.3)}
+  .bsearch{background:rgba(230,200,80,.15);color:#6a5800;border:1px solid rgba(230,200,80,.3)}
+  .bbuild{background:rgba(200,140,60,.15);color:#7a4a10;border:1px solid rgba(200,140,60,.3)}
+  .bbulldoze{background:rgba(160,120,80,.15);color:#6a4a20;border:1px solid rgba(160,120,80,.3)}
+  .bcrush{background:rgba(140,100,70,.15);color:#5a3010;border:1px solid rgba(140,100,70,.3)}
+  .bchop{background:rgba(90,160,90,.15);color:#3a6030;border:1px solid rgba(90,160,90,.3)}
+  .bgenerate{background:rgba(240,210,60,.15);color:#806000;border:1px solid rgba(240,210,60,.3)}
+  .brecycle{background:rgba(100,190,130,.15);color:#286040;border:1px solid rgba(100,190,130,.3)}
+  .bgather{background:rgba(200,160,90,.15);color:#705020;border:1px solid rgba(200,160,90,.3)}
+  .bgatherhoney{background:rgba(240,190,60,.18);color:#7a5800;border:1px solid rgba(240,190,60,.4)}
+  .blitter{background:rgba(170,100,70,.15);color:#6a3020;border:1px solid rgba(170,100,70,.3)}
+  .bhype{background:rgba(230,100,180,.15);color:#9a2070;border:1px solid rgba(230,100,180,.3)}
+  .billuminate{background:rgba(255,240,100,.2);color:#806800;border:1px solid rgba(255,230,60,.45)}
+  .bteleport{background:rgba(140,100,210,.15);color:#6030a0;border:1px solid rgba(140,100,210,.3)}
+  .btransform{background:rgba(100,180,210,.15);color:#204870;border:1px solid rgba(100,180,210,.3)}
+  .byawn{background:rgba(180,180,220,.18);color:#504880;border:1px solid rgba(180,180,220,.35)}
+  .bexplode{background:rgba(240,80,60,.15);color:#a01800;border:1px solid rgba(240,80,60,.3)}
+  .bdreamisland{background:rgba(160,200,240,.18);color:#204878;border:1px solid rgba(160,200,240,.4)}
+  .bstorage{background:rgba(160,130,190,.15);color:#503870;border:1px solid rgba(160,130,190,.3)}
+  .bappraise{background:rgba(210,170,100,.18);color:#704a10;border:1px solid rgba(210,170,100,.35)}
+  .bpaint{background:rgba(240,130,180,.15);color:#902858;border:1px solid rgba(240,130,180,.3)}
+  .beat{background:rgba(200,230,120,.18);color:#506010;border:1px solid rgba(200,230,120,.4)}
+  .bdj{background:rgba(60,40,100,.12);color:#381890;border:1px solid rgba(80,60,180,.3)}
+  .bengineer{background:rgba(80,130,180,.15);color:#204068;border:1px solid rgba(80,130,180,.3)}
+  .bparty{background:rgba(240,160,200,.18);color:#903060;border:1px solid rgba(240,160,200,.4)}
+  .habs{display:flex;flex-wrap:wrap;gap:5px}
+  .hab{display:inline-flex;align-items:flex-start;gap:6px;padding:4px 2px 4px 0;white-space:normal}
+  .hab img{width:36px;height:36px;object-fit:contain;border-radius:6px;flex-shrink:0;padding:3px;background:rgba(155,111,212,.07);image-rendering:auto}
+  .habtext{display:flex;flex-direction:column;gap:1px}
+  .habname{font-size:11px;font-weight:700;color:var(--pu)}
+  .habreq{font-size:10px;font-weight:500;color:var(--mu);line-height:1.35;text-transform:lowercase}
+  .hno{font-size:11px;font-weight:600;color:var(--mu);font-style:italic}
+  .inforow{display:flex;align-items:center;gap:5px;font-size:10px;margin-top:2px}
+  .envbits{display:flex;flex-wrap:wrap;gap:3px}
+  .envb{font-size:10px;font-weight:700;border-radius:20px;padding:2px 7px;white-space:nowrap}
+  .envbright{background:rgba(255,210,50,.15);color:#7a5800;border:1px solid rgba(230,180,30,.3)}
+  .envdark{background:rgba(40,30,80,.12);color:#3a2868;border:1px solid rgba(80,60,140,.25)}
+  .envhumid{background:rgba(60,150,220,.13);color:#1a4070;border:1px solid rgba(60,140,210,.28)}
+  .envdry{background:rgba(210,160,80,.14);color:#6a4010;border:1px solid rgba(200,150,60,.28)}
+  .envwarm{background:rgba(230,100,50,.13);color:#8a2800;border:1px solid rgba(220,90,40,.28)}
+  .envneutral{background:rgba(100,160,100,.12);color:#3a6030;border:1px solid rgba(100,160,100,.25)}
+  .infokey{font-weight:700;color:var(--mu);white-space:nowrap;flex-shrink:0}
+  .infoval{color:var(--mu);font-style:italic}
+  .div{width:100%;height:1px;background:rgba(155,111,212,.1);margin:2px 0}
+  .empty{grid-column:1/-1;text-align:center;padding:60px 20px}
+  .ei{font-size:52px;margin-bottom:16px}
+  .empty h3{font-size:20px;font-weight:800;margin-bottom:8px}
+  .empty p{font-size:14px;color:var(--mu);font-weight:600}
+  .twrow{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:3px}
+  .starkey{font-size:9px;color:var(--mu);text-align:center;margin-top:4px;letter-spacing:.02em}
+  .r1{color:#7a9a50}.r2{color:#d4880a}.r3{color:#c0392b}
+  .ctag.pt{background:rgba(60,130,220,.14);color:#1a4a9a;border:1px solid rgba(60,130,220,.28)}
+  .twb{font-size:10px;font-weight:700;border-radius:20px;padding:2px 7px;white-space:nowrap}
+  .twnight{background:rgba(60,40,100,.15);color:#4a2880;border:1px solid rgba(80,50,140,.25)}
+  .twday{background:rgba(255,200,60,.15);color:#7a5800;border:1px solid rgba(240,180,40,.3)}
+  .twsun{background:rgba(255,180,40,.13);color:#7a4800;border:1px solid rgba(230,160,30,.28)}
+  .twrain{background:rgba(80,140,220,.14);color:#1a4880;border:1px solid rgba(80,130,210,.28)}
+  /* ── View toggle ── */
+  .vtoggle{display:flex;gap:8px;justify-content:center;margin-bottom:24px}
+  .vbtn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;border:2px solid rgba(155,111,212,.3);border-radius:30px;padding:8px 22px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.6);color:var(--mu)}
+  .vbtn.active{background:var(--pu);color:#fff;border-color:var(--pu);box-shadow:0 4px 14px rgba(155,111,212,.35)}
+  /* ── Habitat cards ── */
+  .hcard{background:var(--card);border:1.5px solid var(--cb);border-radius:20px;box-shadow:var(--sh);backdrop-filter:blur(16px);padding:0;overflow:hidden;animation:fu .3s ease both;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+  .hcard:hover{transform:translateY(-4px);box-shadow:var(--shh)}
+  .hcard-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:rgba(155,111,212,.08);display:block}
+  .hcard-img-placeholder{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,rgba(212,232,160,.3),rgba(212,224,232,.3))}
+  .hcard-body{padding:14px 14px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .hcard-num{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--mu);text-transform:uppercase}
+  .hcard-name{font-size:14px;font-weight:900;line-height:1.25;color:var(--tx);text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;hyphens:auto}
+  .hcard-zone{font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;display:inline-block;width:fit-content}
+  .zone-WW{background:rgba(100,180,80,.12);color:#3a6020;border:1px solid rgba(100,180,80,.25)}
+  .zone-BB{background:rgba(210,180,60,.12);color:#6a5000;border:1px solid rgba(210,180,60,.25)}
+  .zone-RR{background:rgba(210,80,60,.12);color:#8a2010;border:1px solid rgba(210,80,60,.25)}
+  .zone-SS{background:rgba(100,160,230,.12);color:#204880;border:1px solid rgba(100,160,230,.25)}
+  .zone-SP{background:rgba(155,111,212,.12);color:#5a2890;border:1px solid rgba(155,111,212,.25)}
+  .hcard-loc{font-size:10px;font-weight:800;border-radius:20px;padding:2px 8px;display:inline-block;width:fit-content}
+  .loc-pt{background:rgba(60,130,220,.14);color:#1a4a9a;border:1px solid rgba(60,130,220,.28)}
+  .loc-event{background:rgba(230,160,40,.15);color:#7a4800;border:1px solid rgba(230,160,40,.3)}
+  .hcard-req{font-size:10px;color:var(--mu);line-height:1.4;text-transform:lowercase;text-align:center}
+  .hcard-divider{width:100%;height:1px;background:rgba(155,111,212,.1)}
+  .hcard-pokes{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .hpoke{display:flex;flex-direction:column;align-items:center;gap:1px;position:relative}
+  .hpoke img{width:44px;height:44px;image-rendering:pixelated;object-fit:contain}
+  .hpoke-name{font-size:8px;font-weight:700;color:var(--mu);text-align:center;max-width:48px;line-height:1.2}
+  .hpoke-star{font-size:8px;font-weight:800;text-align:center}
+  .fn{text-align:center;margin-top:48px;font-size:12px;color:var(--mu);font-weight:600;line-height:1.8}
+  .fn a{color:var(--pu);text-decoration:none}
+  .fn a:hover{text-decoration:underline}
+  @media(max-width:768px){
+    .wrap{padding:0 12px 40px}
+    header{padding:32px 0 24px}
+    .logo-main{font-size:3.5rem}
+    .sub{font-size:13px}
+    .panel{flex-direction:column;gap:10px;padding:16px}
+    .sg{min-width:unset;width:100%}
+    .sg select,.sg input{font-size:16px}
+    .brow{width:100%}
+    .btn{flex:1;padding:12px 16px;font-size:15px}
+    .grid{grid-template-columns:1fr 1fr;gap:10px}
+    .card{padding:13px 10px}
+    .sw{width:64px;height:64px}
+    .sw img{width:52px;height:52px}
+    .cn{font-size:14px}
+    .habreq{font-size:9px}
+    .habname{font-size:10px}
+    .hab img{width:38px;height:38px}
+    .bi{font-size:10px;padding:2px 6px}
+    .rbar{padding:0 2px}
+    .rc,.rs{font-size:12px}
+  }
+  @media(max-width:420px){
+    .grid{grid-template-columns:1fr}
+    .habs{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+<div class="blobs">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="blob b3"></div><div class="blob b4"></div>
+</div>
+<div class="wrap">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-badge">Nintendo Switch 2 · March 2026</div>
+      <div class="logo-title">
+        <span class="logo-poke">Pokémon</span>
+        <span class="logo-main">Pokopia</span>
+      </div>
+      <div class="logo-sub">Habitat &amp; Pokédex Reference</div>
+    </div>
+    <p class="sub">All 209 habitats · 300+ Pokémon · Search by specialty, name, zone, time &amp; weather</p>
+  </header>
+
+  <div class="vtoggle">
+    <button class="vbtn active" id="vbtn-pokemon" onclick="setView('pokemon')">🐾 Pokémon</button>
+    <button class="vbtn" id="vbtn-habitat" onclick="setView('habitat')">🏡 Habitats</button>
+  </div>
+  <div class="panel">
+    <div class="sg">
+      <label>Specialty</label>
+      <select id="sf" onchange="go()">
+        <option value="">— All —</option>
+        <option>Appraise</option><option>Build</option><option>Bulldoze</option>
+        <option>Burn</option><option>Chop</option><option>Collect</option>
+        <option>Crush</option><option>DJ</option><option>Dream Island</option>
+        <option>Eat</option><option>Engineer</option><option>Explode</option>
+        <option>Fly</option><option>Gather</option><option>Gather Honey</option>
+        <option>Generate</option><option>Grow</option><option>Hype</option>
+        <option>Illuminate</option><option>Litter</option><option>Paint</option>
+        <option>Party</option><option>Rarify</option><option>Recycle</option>
+        <option>Search</option><option>Storage</option><option>Teleport</option>
+        <option>Trade</option><option>Transform</option><option>Water</option>
+        <option>Yawn</option>
+      </select>
+    </div>
+    <div class="sg">
+      <label>Pokémon Name</label>
+      <input type="text" id="nf" placeholder="Search…" autocomplete="off">
+    </div>
+    <div class="sg" style="max-width:170px">
+      <label>Habitat Zone</label>
+      <select id="zf" onchange="go()">
+        <option value="">All zones</option>
+        <option value="WW">Withered Wastelands</option>
+        <option value="BB">Bleak Beach</option>
+        <option value="RR">Rocky Ridges</option>
+        <option value="SS">Sparkling Skylands</option>
+        <option value="SP">Special</option>
+        <option value="LEG">Legendary</option>
+        <option value="NPC">NPC / Unique</option>
+      </select>
+    </div>
+    <div class="sg" style="max-width:150px">
+      <label>Time of day</label>
+      <select id="tf" onchange="go()">
+        <option value="">Any time</option>
+        <option value="A">All day</option>
+        <option value="D">Dawn–Dusk only</option>
+        <option value="N">Night only</option>
+      </select>
+    </div>
+    <div class="sg" style="max-width:150px">
+      <label>Weather</label>
+      <select id="wf" onchange="go()">
+        <option value="">Any weather</option>
+        <option value="S">Sunny ☀️</option>
+        <option value="C">Cloudy ⛅</option>
+        <option value="R">Rain 🌧️</option>
+      </select>
+    </div>
+    <div class="brow">
+      <button class="btn bp" onclick="go()">Search</button>
+      <button class="btn bs" onclick="clr()">Clear</button>
+    </div>
+  </div>
+
+  <div class="rbar">
+    <div class="rc" id="rc"><strong>0</strong> Pokémon</div>
+    <div class="rs" id="rs"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <p class="fn">
+    Specialty data: <a href="https://www.serebii.net/pokemonpokopia/availablepokemon.shtml" target="_blank">Serebii.net</a> ·
+    Habitat data: <a href="https://www.pockettactics.com/pokemon-pokopia/habitats" target="_blank">PocketTactics</a> ·
+    Pokémon Pokopia (Switch 2, March 2026) · GAME FREAK &amp; Koei Tecmo<br>
+    † = specialty unconfirmed (Pokémon beyond Serebii's partial dex list)
+  </p>
+</div>
+<script>
+// ─── HABITAT DATABASE (all 209 from PocketTactics + Serebii cross-ref) ───────
+// zone: WW=Withered Wastelands, BB=Bleak Beach, RR=Rocky Ridges, SS=Sparkling Skylands, SP=Special
+const HD = {
+  // ── WITHERED WASTELANDS ──
+  tallgrass:                {id:"001",name:"Tall Grass",                    zone:"WW",req:"Four tall grass",                         p:["Bulbasaur","Squirtle","Geodude","Charmander","Oddish","Charizard"]},
+  treeshadedtallgrass:      {id:"002",name:"Tree-shaded Tall Grass",        zone:"WW",req:"Large tree + four tall grass",             p:["Scyther","Scizor","Bellsprout","Skwovet","Pinsir","Heracross"]},
+  bouldershadedtallgrass:   {id:"003",name:"Boulder-shaded Tall Grass",     zone:"WW",req:"One large boulder + four tall grass",      p:["Timburr","Machop","Gurdurr"]},
+  hydratedtallgrass:        {id:"004",name:"Hydrated Tall Grass",           zone:"WW",req:"Four tall grass + two water",              p:["Squirtle","Sliggoo","Cramorant","Wartortle","Blastoise"]},
+  seasidetallgrass:         {id:"005",name:"Seaside Tall Grass",            zone:"WW",req:"Four tall grass + two ocean water",        p:["Slowpoke","Slowbro","Slowking"]},
+  elevatedtallgrass:        {id:"006",name:"Elevated Tall Grass",           zone:"WW",req:"Four tall grass + high-up location",       p:["Pidgey","Hoothoot","Pidgeotto","Noctowl"]},
+  illuminatedtallgrass:     {id:"007",name:"Illuminated Tall Grass",        zone:"WW",req:"Four tall grass + one lighting",           p:["Venonat","Venomoth"]},
+  prettyflowerbed:          {id:"008",name:"Pretty Flower Bed",             zone:"WW",req:"Four wildflowers",                        p:["Pidgey","Combee","Eevee","Hoothoot","Magby","Pidgeotto"]},
+  treeshadedflowerbed:      {id:"009",name:"Tree-shaded Flower Bed",        zone:"WW",req:"Berry tree + four wildflowers",            p:["Goomy","Cacturne","Vikavolt"]},
+  hydratedflowerbed:        {id:"010",name:"Hydrated Flower Bed",           zone:"WW",req:"Four wildflowers + two water",             p:["Volbeat","Illumise"]},
+  fieldofflowers:           {id:"011",name:"Field of Flowers",              zone:"WW",req:"Eight wildflowers",                       p:["Vespiquen","Ivysaur","Venusaur"]},
+  elevatedflowerbed:        {id:"012",name:"Elevated Flower Bed",           zone:"WW",req:"Four wildflowers + high-up location",     p:["Paras","Parasect"]},
+  gravewithflowers:         {id:"013",name:"Grave with Flowers",            zone:"WW",req:"Four wildflowers + one gravestone",        p:["Cubone","Marowak"]},
+  flowergarden:             {id:"014",name:"Flower Garden",                 zone:"WW",req:"Four hedges + four wildflowers",           p:["Paras","Parasect"]},
+  freshveggiefield:         {id:"015",name:"Fresh Veggie Field",            zone:"WW",req:"Eight vegetable fields",                  p:["Drilbur","Rowlet","Excadrill"]},
+  ridingwarmupdrafts:       {id:"016",name:"Riding Warm Updrafts",          zone:"WW",req:"Three campfires",                         p:["Drifloon"]},
+  campsite:                 {id:"017",name:"Campsite",                      zone:"WW",req:"Campfire + straw table + straw stool",     p:["Charmeleon"]},
+  trainingwaterfall:        {id:"018",name:"Training Waterfall",            zone:"WW",req:"Seat + two water + waterfall",             p:["Tyrogue"]},
+  tantalizingdiningset:     {id:"019",name:"Tantalizing Dining Set",        zone:"WW",req:"Seat + table + plated food",               p:["Gulpin"]},
+  picnicset:                {id:"020",name:"Picnic Set",                    zone:"WW",req:"Two seats + table + picnic basket",        p:["Pichu","Pikachu"]},
+  flowerytable:             {id:"021",name:"Flowery Table",                 zone:"WW",req:"Seat + table + small vase",                p:["Weepinbell","Victreebel"]},
+  benchwithgreenery:        {id:"022",name:"Bench with Greenery",           zone:"WW",req:"Two hedges + one wide seat",               p:["Bulbasaur","Ivysaur"]},
+  illuminatedbench:         {id:"023",name:"Illuminated Bench",             zone:"WW",req:"Wide seat + lit streetlight",              p:["Venonat","Venomoth"]},
+  exerciserestingspot:      {id:"024",name:"Exercise Resting Spot",         zone:"WW",req:"Punching bag + seat",                     p:["Hitmonchan"]},
+  urgentcare:               {id:"025",name:"Urgent Care",                   zone:"WW",req:"Seat + table + first aid kit",             p:["Hitmonlee"]},
+  gymfirstaid:              {id:"026",name:"Gym First Aid",                 zone:"WW",req:"Table + punching bag + first aid kit",     p:["Hitmontop"]},
+  roadsign:                 {id:"027",name:"Road Sign",                     zone:"WW",req:"Arrow sign + three wooden paths",          p:["Shellos (West Sea)","Shellos (East Sea)"]},
+  largeluggagecarrier:      {id:"028",name:"Large Luggage Carrier",         zone:"WW",req:"Cart + two wooden crates",                p:["Tinkatink","Gurdurr","Tinkatuff"]},
+  lumberjacksworkplace:     {id:"029",name:"Lumberjack's Workplace",        zone:"WW",req:"Log chair + cart + tree stump + log table",p:["Axew","Fraxure","Haxorus"]},
+  bedwithaplush:            {id:"030",name:"Bed with a Plush",              zone:"WW",req:"Bed + doll",                               p:["Drifloon","Slowbro","Slowking","Munchlax"]},
+  gentlylitbed:             {id:"031",name:"Gently Lit Bed",                zone:"WW",req:"Bed + table + lit slender candle",         p:["Hoothoot","Noctowl"]},
+  graveoffering:            {id:"032",name:"Grave Offering",                zone:"WW",req:"Gravestone + two candles + plated food",   p:["Litwick","Lampent"]},
+  creepygraveoffering:      {id:"033",name:"Creepy Grave Offering",         zone:"WW",req:"Two eerie candles + gravestone + food",    p:["Litwick","Lampent","Chandelure"]},
+  chanseyrestingarea:       {id:"034",name:"Chansey Resting Area",          zone:"WW",req:"Six hedges + Chansey plant + wide seat",   p:["Vileplume","Bellossom"]},
+  irresistiblescentandglow: {id:"035",name:"Irresistible Scent and Glow",   zone:"WW",req:"Pitcher-plant pot + food + mushroom lamp", p:["Weepinbell","Victreebel"]},
+  floatingintheshade:       {id:"036",name:"Floating in the Shade",         zone:"WW",req:"Inflatable boat + beach parasol + water",  p:["Blastoise"]},
+  smoothtallgrass:          {id:"037",name:"Smooth Tall Grass",             zone:"WW",req:"Four dry tall grass + smooth rock",        p:["Onix"]},
+  factorystorage:           {id:"038",name:"Factory Storage",               zone:"WW",req:"Streetlight + control unit + metal drum + cord", p:["Magnemite"]},
+  luxurychirpchirpmeal:     {id:"039",name:"Luxury Chirp-chirp Meal",       zone:"WW",req:"Wooden birdhouse + berry basket",          p:["Pidgeot"]},
+  berryfeastcampsite:       {id:"040",name:"Berry-feast Campsite",          zone:"WW",req:"Two sun charms + bonfire + berry basket (high)", p:["Charizard"]},
+  raindancesite:            {id:"041",name:"Rain Dance Site",               zone:"WW",req:"Two rain charms + plated food",            p:["Goomy"]},
+  sunnydaysite:             {id:"042",name:"Sunny Day Site",                zone:"WW",req:"Two sun charms + plated food",             p:["Cacnea"]},
+  professorstreasuretrove:  {id:"043",name:"Professor's Treasure Trove",    zone:"WW",req:"Treasure trove + four large relics + bed", p:["Tangrowth"]},
+  crazyloghandicrafts:      {id:"044",name:"Crazy Log Handicrafts",         zone:"WW",req:"Log chair + log bed + log table",          p:["Axew","Fraxure","Haxorus"]},
+  veryberryspace:           {id:"045",name:"Very-berry Space",              zone:"WW",req:"Berry chair + bed + table + lamp",         p:["Goodra"]},
+  gardenterrace:            {id:"046",name:"Garden Terrace",                zone:"WW",req:"Four wildflowers + garden chair + garden light + table", p:["Venusaur"]},
+  treeshadedsnoozingsnorlax:{id:"047",name:"Tree-shaded Snoozing Snorlax",  zone:"WW",req:"Large tree + naptime bed",                 p:["Munchlax","Snorlax"]},
+  goodoldfashionedantiques: {id:"048",name:"Good Old-fashioned Antiques",   zone:"WW",req:"Antique closet + bed + dresser + chair",   p:["Weezing","Snorlax"]},
+  nothinbutpokeballs:       {id:"049",name:"Nothin' but Poke Balls",        zone:"WW",req:"Poké Ball sofa + bed + table + light",     p:["Tangela"]},
+  fishingpond:              {id:"184",name:"Fishing Pond",                  zone:"WW",req:"Fishing rod + seat + water",               p:["Slowbro","Slowking"]},
+
+  // ── BLEAK BEACH ──
+  yellowtallgrass:          {id:"050",name:"Yellow Tall Grass",             zone:"BB",req:"Four yellow tall grass",                   p:["Spinarak","Grubbin","Ariados"]},
+  treeshadedyellowtallgrass:{id:"051",name:"Tree-shaded Yellow Tall Grass", zone:"BB",req:"Large tree + four yellow tall grass",      p:["Zubat","Makuhita","Golbat","Hariyama"]},
+  hydratedyellowtallgrass:  {id:"053",name:"Hydrated Yellow Tall Grass",    zone:"BB",req:"Four yellow tall grass + two water",       p:["Azurill","Piplup","Marill","Prinplup"]},
+  marshytallgrass:          {id:"054",name:"Marshy Tall Grass",             zone:"BB",req:"Four yellow tall grass + two muddy water", p:["Paldean Wooper","Clodsire"]},
+  overgrowthvendingmachine: {id:"055",name:"Overgrowth Vending Machine",    zone:"BB",req:"Four yellow tall grass + powered vending machine", p:["Mareep"]},
+  breezyflowerbed:          {id:"056",name:"Breezy Flower Bed",             zone:"BB",req:"Four seashore flowers",                    p:["Pawmi","Zorua","Zoroark"]},
+  tropicalvibes:            {id:"057",name:"Tropical Vibes",                zone:"BB",req:"Large palm tree + four seashore flowers",  p:["Gloom","Exeggcute","Exeggutor"]},
+  windyflowerbed:           {id:"058",name:"Windy Flower Bed",              zone:"BB",req:"Windmill + four seashore flowers",         p:["Wingull","Pelipper"]},
+  shadedbeach:              {id:"059",name:"Shaded Beach",                  zone:"BB",req:"Large palm tree + beach chair",            p:["Exeggcute","Exeggutor"]},
+  tropicalseaside:          {id:"060",name:"Tropical Seaside",              zone:"BB",req:"Large palm tree + four hedges + two ocean water", p:["Lapras"]},
+  restingspot:              {id:"061",name:"Resting Spot",                  zone:"BB",req:"Cardboard boxes + straw bed",              p:["Meowth"]},
+  perpetualmess:            {id:"062",name:"Perpetual Mess",                zone:"BB",req:"Cardboard boxes + two toys",               p:["Growlithe","Azurill"]},
+  trashcollectionsite:      {id:"063",name:"Trash Collection Site",         zone:"BB",req:"Waste bin + sign + garbage bags",          p:["Trubbish","Koffing","Weezing","Garbodor"]},
+  trashcancentral:          {id:"064",name:"Trash Can Central",             zone:"BB",req:"Four garbage bins",                       p:["Magneton","Electabuzz","Magnezone"]},
+  trashdisposalsite:        {id:"065",name:"Trash Disposal Site",           zone:"BB",req:"Utility pole + garbage bags",              p:["Crobat"]},
+  parkbench:                {id:"066",name:"Park Bench",                    zone:"BB",req:"Wide seat + garbage bin",                  p:["Zubat","Voltorb","Electrode"]},
+  tantalizingrestaurant:    {id:"067",name:"Tantalizing Restaurant",        zone:"BB",req:"Seat + table + menu board + plated food",  p:["Pawmo","Pawmi"]},
+  tablesidedeliverycart:    {id:"068",name:"Tableside Delivery Cart",       zone:"BB",req:"Two chic chairs + chic table + vase + push cart + food", p:["Empoleon"]},
+  chirpchirpmeal:           {id:"069",name:"Chirp-chirp Meal",              zone:"BB",req:"Wooden birdhouse + table + plated food",   p:["Torchic","Blaziken"]},
+  cafespace:                {id:"070",name:"Café Space",                    zone:"BB",req:"Two seats + potted plant + two counters + mug + menu board", p:["Pawmo","Pawmot"]},
+  beachset:                 {id:"071",name:"Beach Set",                     zone:"BB",req:"Beach chair + beach parasol + side table",  p:["Tatsugiri (Stretchy)","Tatsugiri (Droopy)","Tatsugiri (Curly)"]},
+  lightusstage:             {id:"072",name:"Light-up Stage",                zone:"BB",req:"Two spotlights + small stage",             p:["Electabuzz","Electivire"]},
+  surpriseinstore:          {id:"073",name:"Surprise in Store",             zone:"BB",req:"Two balloons + boo-in-the-box",            p:["Haunter","Zoroark","Gengar"]},
+  nightfestivalvenue:       {id:"074",name:"Night Festival Venue",          zone:"BB",req:"Two balloons + Raichu sign",               p:["Flaaffy"]},
+  changingarea:             {id:"075",name:"Changing Area",                 zone:"BB",req:"Closet + large mirror",                    p:["Minccino"]},
+  privatemakeupstand:       {id:"076",name:"Private Makeup Stand",          zone:"BB",req:"Two partitions + closet + dresser",        p:["Minccino","Cinccino"]},
+  knittingstation:          {id:"077",name:"Knitting Station",              zone:"BB",req:"Seat + table + knitting supplies",         p:["Mareep","Flaaffy"]},
+  hotspringshower:          {id:"078",name:"Hot-spring Shower",             zone:"BB",req:"Shower + seat + two hot-spring water",     p:["Psyduck","Golduck"]},
+  resortmealprep:           {id:"079",name:"Resort Meal Prep",              zone:"BB",req:"Palm tree + seat + food + lit campfire",   p:["Growlithe","Torchic","Combusken"]},
+  allpackedup:              {id:"080",name:"All Packed Up",                 zone:"BB",req:"Cart + two cardboard boxes",               p:["Farfetch'd","Makuhita","Hariyama"]},
+  fullrecovery:             {id:"081",name:"Full Recovery",                 zone:"BB",req:"Bed + plain chest + first aid kit",        p:["Chansey","Peakychu"]},
+  alarmclocksleepzone:      {id:"082",name:"Alarm Clock Sleep Zone",        zone:"BB",req:"Bed + table + alarm clock",                p:["Happiny"]},
+  vendingmachinebreakarea:  {id:"083",name:"Vending Machine Break Area",    zone:"BB",req:"Powered vending machine + wide seat",      p:["Grubbin","Charjabug"]},
+  vendingmachineset:        {id:"084",name:"Vending Machine Set",           zone:"BB",req:"Waste bin + powered vending machine",      p:["Elekid","Electivire"]},
+  minigamecorner:           {id:"085",name:"Mini Game Corner",              zone:"BB",req:"Powered arcade machine + seat + punching game", p:["Magneton","Magnezone"]},
+  waterwheelspot:           {id:"086",name:"Waterwheel Spot",               zone:"BB",req:"Waterwheel + water + waterfall",           p:["Prinplup","Empoleon"]},
+  furnacespot:              {id:"087",name:"Furnace Spot",                  zone:"BB",req:"Metal drum + furnace",                     p:["Combusken","Blaziken"]},
+  dock:                     {id:"088",name:"Dock",                          zone:"BB",req:"Four walkways + streetlight + two ocean water", p:["Marill","Azumarill"]},
+  spookystudy:              {id:"089",name:"Spooky Study",                  zone:"BB",req:"Bookcase + chic sofa + table + candle",    p:["Gastly","Haunter"]},
+  playingpirate:            {id:"090",name:"Playing Pirate",                zone:"BB",req:"Two barrels + two cannons + ship's wheel",  p:["Voltorb","Electrode"]},
+  workingtheregister:       {id:"091",name:"Working the Register",          zone:"BB",req:"Table + powered cash register",            p:["Meowth","Audino","Happiny","Mawile"]},
+  tinyatelier:              {id:"092",name:"Tiny Atelier",                  zone:"BB",req:"Canvas + seat",                            p:["Smearguru"]},
+  gourmetssaltar:           {id:"093",name:"Gourmet's Altar",               zone:"BB",req:"One offering dish",                       p:["Mosslax"]},
+  pikachuspace:             {id:"094",name:"Pikachu Space",                 zone:"BB",req:"Pikachu sofa + Pikachu doll",              p:["Mimikyu"]},
+  cutenessoverload:         {id:"095",name:"Cuteness Overload",             zone:"BB",req:"Cute sofa + table + lamp + bed + dresser", p:["Blissey"]},
+  welcomingresort:          {id:"096",name:"Welcoming Resort",              zone:"BB",req:"Resort sofa + table + hammock + light",    p:["Absol"]},
+  plainlife:                {id:"097",name:"Plain Life",                    zone:"BB",req:"Plain bed + sofa + table + lamp",          p:["Ampharos"]},
+  oceanfishingspot:         {id:"185",name:"Ocean Fishing Spot",            zone:"BB",req:"Fishing rod + seat + ocean water",         p:["Magikarp","Gastrodon (West Sea)","Gastrodon (East Sea)"]},
+  marshfishingspot:         {id:"186",name:"Marsh Fishing Spot",            zone:"BB",req:"Fishing rod + seat + muddy water",         p:["Grimer","Muk","Clodsire"]},
+
+  // ── ROCKY RIDGES ──
+  redtallgrass:             {id:"098",name:"Red Tall Grass",                zone:"RR",req:"Four red tall grass",                      p:["Scorbunny","Riolu","Kricketot","Kricketune","Cinderace"]},
+  treeshadedredtallgrass:   {id:"099",name:"Tree-shaded Red Tall Grass",    zone:"RR",req:"Large tree + four red tall grass",         p:["Diglett","Bonsly","Dugtrio","Sudowoodo"]},
+  pointytreeshadedrockytallgrass:{id:"100",name:"Pointy Tree-shaded Rocky Tall Grass",zone:"RR",req:"Pointy tree + four red tall grass + large boulder", p:["Dartrix","Decidueye"]},
+  hydratedredtallgrass:     {id:"101",name:"Hydrated Red Tall Grass",       zone:"RR",req:"Four red tall grass + two water",          p:["Lotad","Lombre"]},
+  elevatedredtallgrass:     {id:"102",name:"Elevated Red Tall Grass",       zone:"RR",req:"Four red tall grass + high-up location",   p:["Murkrow","Chatot"]},
+  grassytrainingfield:      {id:"103",name:"Grassy Training Field",         zone:"RR",req:"Two sandbags + four red tall grass",        p:["Machoke","Machamp"]},
+  gracefulflowerbed:        {id:"104",name:"Graceful Flower Bed",           zone:"RR",req:"Four mountain flowers",                    p:["Cleffa","Clefairy","Fidough","Dachsbun","Clefable"]},
+  treeshadedgracefulflowerbed:{id:"105",name:"Tree-shaded Graceful Flower Bed",zone:"RR",req:"Pointy tree + four mountain flowers", p:["Murkrow","Larvesta","Volcarona"]},
+  hydratedgracefulflowerbed:{id:"106",name:"Hydrated Graceful Flower Bed",  zone:"RR",req:"Four mountain flowers + two water",        p:["Ekans","Arbok","Politoed"]},
+  flowergardenstumpstage:   {id:"107",name:"Flower Garden Stump Stage",     zone:"RR",req:"Four mountain flowers + tree stump + two mushroom lamps", p:["Igglybuff","Jigglypuff","Politoed"]},
+  toilinthesoil:            {id:"108",name:"Toil in the Soil",              zone:"RR",req:"Four vegetable fields + wheelbarrow",       p:["Tyranitar"]},
+  upliftingduckweed:        {id:"109",name:"Uplifting Duckweed",            zone:"RR",req:"Four duckweed + two water",                p:["Lotad","Ludicolo"]},
+  mossyrestspot:            {id:"110",name:"Mossy Rest Spot",               zone:"RR",req:"Four moss",                                p:["Larvitar","Tyranitar"]},
+  mossyboulder:             {id:"111",name:"Mossy Boulder",                 zone:"RR",req:"Four moss + mossy boulder",                p:["Graveler","Golem"]},
+  mossyhotspring:           {id:"112",name:"Mossy Hot Spring",              zone:"RR",req:"Four moss + two hot-spring water",         p:["Torkoal"]},
+  openairbath:              {id:"113",name:"Open-air Bath",                 zone:"RR",req:"Hot-spring spout + hot-spring water",       p:["Raboot"]},
+  harmonioushotspring:      {id:"114",name:"Harmonious Hot Spring",         zone:"RR",req:"Hot-spring spout + water basin + two hot-spring water", p:["Politoed"]},
+  pipinghotlava:            {id:"115",name:"Piping-hot Lava",               zone:"RR",req:"One molten rock + two lava",               p:["Charcadet","Volcarona"]},
+  diggingandburning:        {id:"116",name:"Digging and Burning",           zone:"RR",req:"Wheelbarrow + smelting furnace + excavation tools", p:["Magmar"]},
+  clinkclangironconstruction:{id:"117",name:"Clink-clang Iron Construction",zone:"RR",req:"Three iron beams + wheelbarrow + sandbags + excavation tools", p:["Steelix","Machamp"]},
+  creepywhiterocks:         {id:"118",name:"Creepy White Rocks",            zone:"RR",req:"Stalagmites + four moss + wooden crate + lantern", p:["Glimmet","Glimmora"]},
+  containersnacking:        {id:"119",name:"Container Snacking",            zone:"RR",req:"Barrel + wooden crate + lantern + plated food", p:["Diglett","Glimmet","Glimmora"]},
+  dinnertablesurprise:      {id:"120",name:"Dinner Table Surprise",         zone:"RR",req:"Two wide seats + large table + four party platters", p:["Swalot"]},
+  bestbreadbakery:          {id:"121",name:"Best Bread Bakery",             zone:"RR",req:"Bread oven + two counters + plated food",   p:["Fidough","Dachsbun"]},
+  minikitchen:              {id:"122",name:"Mini Kitchen",                  zone:"RR",req:"Kitchen table + stove + frying pan + sink", p:["Magmortar"]},
+  houseparty:               {id:"123",name:"House Party",                   zone:"RR",req:"Food counter + paper party cups + plated food", p:["Dugtrio","Sudowoodo"]},
+  lazyphotoalbumscrolling:  {id:"124",name:"Lazy-photo Album Scrolling",    zone:"RR",req:"Tablet + paper party cups",                p:["Toxel"]},
+  chirpingrecital:          {id:"125",name:"Chirping Recital",              zone:"RR",req:"Perch + standing mic",                     p:["Chatot","Honchkrow"]},
+  recitalstage:             {id:"126",name:"Recital Stage",                 zone:"RR",req:"Two speakers + small stage + standing mic", p:["Jigglypuff","Wigglytuff"]},
+  boxtotherhythm:           {id:"127",name:"Box to the Rhythm",             zone:"RR",req:"Punching bag + table + CD player",          p:["Machoke","Riolu","Lucario"]},
+  musicandmagazines:        {id:"128",name:"Music and Magazines",           zone:"RR",req:"CD player + CD rack + magazine rack",       p:["Kricketot","Kricketune","DJ Rotom"]},
+  minimuseum:               {id:"129",name:"Mini Museum",                   zone:"RR",req:"Three posts + pedestal + large lost relic", p:["Gimmighoul","Arcanine"]},
+  refreshinglockerroom:     {id:"130",name:"Refreshing Locker Room",        zone:"RR",req:"Two lockers + potted plant + seat + punching game", p:["Raboot","Cinderace"]},
+  bronzelandmark:           {id:"131",name:"Bronze Landmark",               zone:"RR",req:"Four hedges + moonlight dance statue + sign", p:["Clefairy","Clefable"]},
+  railroadcrossing:         {id:"132",name:"Railroad Crossing",             zone:"RR",req:"Railway track + crossing gate",             p:["Carkol","Rolycoly","Coalossal"]},
+  chefskitchen:             {id:"133",name:"Chef's Kitchen",                zone:"RR",req:"Stove + sink + table + stylish pot + cutting board + food", p:["Chef Dente"]},
+  absoluteluxury:           {id:"134",name:"Absolute Luxury",               zone:"RR",req:"Lit luxury lamp + luxury bed + sofa + table", p:["Gholdengo"]},
+  heavyiron:                {id:"135",name:"Heavy Iron",                    zone:"RR",req:"Iron bed + table + chair + lit lantern",    p:["Coalossal"]},
+  modernliving:             {id:"136",name:"Modern Living",                 zone:"RR",req:"Industrial bed + desk + chair",             p:["Decidueye"]},
+  hotspringfishingspot:     {id:"187",name:"Hot-spring Fishing Spot",       zone:"RR",req:"Fishing rod + seat + hot-spring water",     p:["Lotad","Lombre"]},
+  magmafishingspot:         {id:"188",name:"Magma Fishing Spot",            zone:"RR",req:"Fishing rod + seat + lava",                 p:["Arcanine"]},
+
+  // ── SPARKLING SKYLANDS ──
+  pinktallgrass:            {id:"137",name:"Pink Tall Grass",               zone:"SS",req:"Four pink tall grass",                     p:["Trapinch","Duskull","Swablu","Vibrava","Flygon"]},
+  treeshadedpinktallgrass:  {id:"138",name:"Tree-shaded Pink Tall Grass",   zone:"SS",req:"Large tree + four pink tall grass",         p:["Sprigarito","Dreepy","Pupitar","Drakloak"]},
+  hydratedpinktallgrass:    {id:"139",name:"Hydrated Pink Tall Grass",      zone:"SS",req:"Four pink tall grass + two water",          p:["Froakie","Frogadier","Greninja"]},
+  elevatedpinktallgrass:    {id:"140",name:"Elevated Pink Tall Grass",      zone:"SS",req:"Four pink tall grass + high-up location",   p:["Corvisquire","Wattrel","Kilowattrel","Corviknight"]},
+  concretepipesecretbase:   {id:"141",name:"Concrete Pipe Secret Base",     zone:"SS",req:"Three concrete pipes + four tall grass",    p:["Cyndaquil","Quilava"]},
+  fluffyflowerbed:          {id:"142",name:"Fluffy Flower Bed",             zone:"SS",req:"Four skyland flowers",                     p:["Vulpix","Rookidee","Misdreavus","Ninetales","Mismagius"]},
+  treeshadedfluffyflowerbed:{id:"143",name:"Tree-shaded Fluffy Flower Bed", zone:"SS",req:"Large tree + four skyland flowers",         p:["Girafarig","Farigiraf","Servine","Serperior"]},
+  hydratedfluffyflowerbed:  {id:"144",name:"Hydrated Fluffy Flower Bed",    zone:"SS",req:"Four skyland flowers + two water",          p:["Dratini","Poliwhirl","Dragonair"]},
+  watersidedinghy:          {id:"145",name:"Waterside Dinghy",              zone:"SS",req:"Canoe + two duckweed + two water (high-up)", p:["Dragonite"]},
+  illuminatedwaterfall:     {id:"146",name:"Illuminated Waterfall",         zone:"SS",req:"Three stepping stones + two torches + three water + waterfall", p:["Gyarados"]},
+  birdsongarden:            {id:"147",name:"Birdsong Garden",               zone:"SS",req:"Stylish hedge + wooden birdhouse",          p:["Altaria"]},
+  simplebathroom:           {id:"148",name:"Simple Bathroom",               zone:"SS",req:"Shower + bathtub",                         p:["Dratini","Dragonair"]},
+  cyclingreststop:          {id:"149",name:"Cycling Rest Stop",             zone:"SS",req:"Bike + powered vending machine",            p:["Beldum"]},
+  fireplacenapspot:         {id:"150",name:"Fireplace Nap Spot",            zone:"SS",req:"Stone fireplace + wide seat",               p:["Quilava","Typhlosion"]},
+  surgingpsychicpower:      {id:"151",name:"Surging Psychic Power",         zone:"SS",req:"Cushion + crystal ball",                   p:["Abra","Alakazam"]},
+  fortunetellerstable:      {id:"152",name:"Fortune-teller's Table",        zone:"SS",req:"Two seats + table + crystal ball",          p:["Abra","Kadabra"]},
+  trashsitetv:              {id:"153",name:"Trash Site Tv",                 zone:"SS",req:"Two garbage bags + television",             p:["Dusclops","Dusknoir"]},
+  oversizeddumpingground:   {id:"154",name:"Oversized Dumping Ground",      zone:"SS",req:"Three iron beams + tire + waste bin + microwave", p:["Tinkatink","Tinkaton"]},
+  interrogationdesk:        {id:"155",name:"Interrogation Desk",            zone:"SS",req:"Arcanine doll + folding chair + industrial desk + desk light", p:["Sprigarito","Floragato"]},
+  sewerholeinspection:      {id:"156",name:"Sewer Hole Inspection",         zone:"SS",req:"Iron pipes + sewer cover + excavation tools + traffic cone", p:["Tinkatink","Corviknight","Poliwrath"]},
+  spotlesswashingstation:   {id:"157",name:"Spotless Washing Station",      zone:"SS",req:"Towel rack + wall mirror + sink",           p:["Mime Jr.","Mr. Mime"]},
+  hometheater:              {id:"158",name:"Home Theater",                  zone:"SS",req:"Two speakers + stand + television",         p:["Mismagius"]},
+  studyarea:                {id:"159",name:"Study Area",                    zone:"SS",req:"Bookcase + seat + table + pencil holder",   p:["Ralts","Kirlia"]},
+  rhythmiclivingroom:       {id:"160",name:"Rhythmic Living Room",          zone:"SS",req:"Two speakers + powered TV + four music mats", p:["Noibat","Noivern"]},
+  squeakyclean:             {id:"161",name:"Squeaky Clean",                 zone:"SS",req:"Bathtub + cleaning supplies",               p:["Poliwag"]},
+  moisturizingmakeupstand:  {id:"162",name:"Moisturizing Makeup Stand",     zone:"SS",req:"Dresser + seat + humidifier",               p:["Kirlia","Gardevoir"]},
+  minilibrary:              {id:"163",name:"Mini Library",                  zone:"SS",req:"Two bookcases + step stool + table + powered light", p:["Gardevoir"]},
+  gamecornerbattlezone:     {id:"164",name:"Game Corner Battle Zone",       zone:"SS",req:"Two powered arcade machines + two seats",   p:["Porygon-Z"]},
+  playland:                 {id:"165",name:"Playland",                      zone:"SS",req:"Slide + toy",                               p:["Snivy"]},
+  workdesk:                 {id:"166",name:"Work Desk",                     zone:"SS",req:"Office desk + laptop + mug + office chair", p:["Porygon-2"]},
+  officestoreroom:          {id:"167",name:"Office Storeroom",              zone:"SS",req:"Office shelf + step stool + cardboard boxes", p:["Misdreavus","Drakloak","Mismagius","Dragapult"]},
+  experimentspace:          {id:"168",name:"Experiment Space",              zone:"SS",req:"Science experiment + microscope + papers",  p:["Alakazam"]},
+  professorsapprenticeprogram:{id:"169",name:"Professor's Apprentice Program",zone:"SS",req:"Whiteboard + table + jumbled cords + laptop", p:["Metang"]},
+  researchersdesk:          {id:"170",name:"Researcher's Desk",             zone:"SS",req:"Two tables + computer + science experiment", p:["Porygon"]},
+  publicreadingmaterial:    {id:"171",name:"Public Reading Material",       zone:"SS",req:"Magazine rack + newspaper",                 p:["Mime Jr.","Serperior"]},
+  heartpoundingsurprisebox: {id:"172",name:"Heart-pounding Surprise Box",   zone:"SS",req:"Spotlight + big drum + boo-in-the-box",     p:["Meowscarada"]},
+  prankbutton:              {id:"173",name:"Prank Button",                  zone:"SS",req:"Floor switch + boo-in-the-box",             p:["Frogadier","Greninja"]},
+  picturesquephotocutoutboard:{id:"174",name:"Picturesque Photo Cutout Board",zone:"SS",req:"Photo cutout board + two spotlights (high-up)", p:["Plusle","Minun"]},
+  tirepark:                 {id:"175",name:"Tire Park",                     zone:"SS",req:"Slide + tires + two tire toys",             p:["Dedenne"]},
+  naturesmarket:            {id:"176",name:"Nature's Market",               zone:"SS",req:"Large tree + large boulder + table + cash register", p:["Raichu"]},
+  constructionsitegenerator:{id:"177",name:"Construction-site Generator",   zone:"SS",req:"Furnace + two iron scaffolds + iron pipes",  p:["Conkeldurr"]},
+  dojotraining:             {id:"178",name:"Dojo Training",                 zone:"SS",req:"Two hanging scrolls + two strength rocks",  p:["Poliwrath","Gallade"]},
+  evilorganizationhq:       {id:"179",name:"Evil Organization Hq",         zone:"SS",req:"Two potted plants + Team Rocket wall hanging + luxury sofa", p:["Persian"]},
+  nineflames:               {id:"180",name:"Nine Flames",                   zone:"SS",req:"Nine firepits",                            p:["Ninetales"]},
+  plushcentral:             {id:"181",name:"Plush Central",                 zone:"SS",req:"Arcanine doll + Pikachu doll + Dragonite doll + Eevee doll", p:["Drifloon","Drifblim"]},
+  gamersparadise:           {id:"182",name:"Gamer's Paradise",              zone:"SS",req:"Gaming bed + table + gaming PC + chair + gaming fridge", p:["Metagross"]},
+  toppop:                   {id:"183",name:"Top Pop",                       zone:"SS",req:"Pop art bed + pop art sofa + pop art table", p:["Typhlosion"]},
+
+  // ── SPECIAL ──
+  ampedrocstage:            {id:"189",name:"Amped Rock Stage",              zone:"SP",req:"Two speakers + small stage + electric guitar + standing mic (powered)", p:["Toxtricity (Amped)"]},
+  lowkeyrocstage:           {id:"190",name:"Low-key Rock Stage",            zone:"SP",req:"Two speakers + small stage + bass guitar + standing mic (powered)", p:["Toxtricity (Low Key)"]},
+  maliciousknitesshrine:    {id:"191",name:"Malicious Knight's Shrine",     zone:"SP",req:"Pedestal + malicious armor + two stepping stones + two firepits", p:["Ceruledge"]},
+  auspiciousknitesshrine:   {id:"192",name:"Auspicious Knight's Shrine",    zone:"SP",req:"Pedestal + auspicious armor + two stepping stones + two firepits", p:["Armarouge"]},
+  wingfossildisplay:        {id:"193",name:"Wing Fossil Display",           zone:"SP",req:"Pedestal + wing fossil",                    p:["Aerodactyl"]},
+  skullfossildisplay:       {id:"194",name:"Skull Fossil Display",          zone:"SP",req:"Pedestal + skull fossil",                   p:["Cranidos"]},
+  headbuttfossildisplay:    {id:"195",name:"Headbutt Fossil Display",       zone:"SP",req:"Pedestal + headbutt fossil",               p:["Rampardos"]},
+  armorfossildisplay:       {id:"196",name:"Armor Fossil Display",          zone:"SP",req:"Pedestal + armor fossil",                   p:["Shieldon"]},
+  shieldfossildisplay:      {id:"197",name:"Shield Fossil Display",         zone:"SP",req:"Two pedestals + shield fossil",             p:["Bastiodon"]},
+  jawfossildisplay:         {id:"198",name:"Jaw Fossil Display",            zone:"SP",req:"Pedestal + jaw fossil",                     p:["Tyrunt"]},
+  despotfossildisplay:      {id:"199",name:"Despot Fossil Display",         zone:"SP",req:"Two pedestals + despot fossil",             p:["Tyrantrum"]},
+  sailfossildisplay:        {id:"200",name:"Sail Fossil Display",           zone:"SP",req:"Pedestal + sail fossil",                    p:["Amaura"]},
+  tundrafossildisplay:      {id:"201",name:"Tundra Fossil Display",         zone:"SP",req:"Pedestal + tundra fossil",                  p:["Aurorus"]},
+  boundlessbluebeverage:    {id:"202",name:"Boundless Blue Beverage",       zone:"SP",req:"Seat + table + soda float",                p:["Vaporeon"],loc:"pt"},
+  electrifyingpotatoes:     {id:"203",name:"Electrifying Potatoes",         zone:"SP",req:"Seat + table + fried potatoes",             p:["Jolteon"],loc:"pt"},
+  burninghotspice:          {id:"204",name:"Burning-hot Spice",             zone:"SP",req:"Seat + table + pizza",                     p:["Flareon"],loc:"pt"},
+  elegantdaytimetreats:     {id:"205",name:"Elegant Daytime Treats",        zone:"SP",req:"Seat + table + afternoon tea set",          p:["Espeon"],loc:"pt"},
+  darkchocolatecookies:     {id:"206",name:"Dark-chocolate Cookies",        zone:"SP",req:"Seat + table + chocolate cookies",          p:["Umbreon"],loc:"pt"},
+  leafygreenssandwich:      {id:"207",name:"Leafy Greens Sandwich",         zone:"SP",req:"Seat + table + sandwiches",                 p:["Leafeon"],loc:"pt"},
+  chillyshavedice:          {id:"208",name:"Chilly Shaved Ice",             zone:"SP",req:"Seat + table + shaved ice",                 p:["Glaceon"],loc:"pt"},
+  lovelyribboncake:         {id:"209",name:"Lovely Ribbon Cake",            zone:"SP",req:"Seat + table + ribbon cake",               p:["Sylveon"],loc:"pt"},
+  yellowcarpet:             {id:"001e",name:"Yellow Carpet",                zone:"SP",req:"Four dandy flowers",                        p:["Hoppip","Skiploom","Jumpluff"],loc:"event"},
+  fieldtripfriends:         {id:"002e",name:"Field-trip Friends",           zone:"SP",req:"Flower backpack + Hoppip water bottle + lunch box", p:["Skiploom"],loc:"event"},
+  dandelionlunchtime:       {id:"003e",name:"Dandelion Lunchtime",          zone:"SP",req:"Dandy flower + flower cushion + lunch box + flowery table setting", p:["Jumpluff"],loc:"event"},
+};
+
+// Build reverse map: pokémon name → habitats[]
+const PH = {};
+for (const [slug, h] of Object.entries(HD)) {
+  for (const n of h.p) {
+    if (!PH[n]) PH[n] = [];
+    PH[n].push({ slug, name: h.name, id: h.id, zone: h.zone, req: h.req });
+  }
+}
+
+function habImg(id) {
+  // pokopiawiki.com Cloudflare R2 CDN — no hotlink/referrer restrictions
+  if (!id || id.includes('e')) return null;
+  return `https://pub-63d9fdd35f184b7c82eb49a6ebead636.r2.dev/habitats/${String(id).padStart(3,'0')}.png`;
+}
+function specSlug(s) { return s.toLowerCase().replace(/\s+/g,'').replace(/[^a-z]/g,''); }
+function specIcon(s) { return null; } // icons hotlinked from Serebii - blocked in iframe
+function specCls(s)  { return `bi b${specSlug(s)}`; }
+
+// ─── POKÉMON DATABASE ────────────────────────────────────────────────────────
+// s = specialties (from Serebii scrape — confirmed)
+// sc = specialty confirmed? (false = inferred from type/context, marked †)
+// zone = zone(s) they appear in (derived from habitats)
+// npc = NPC/unique Pokémon
+// excl = game-exclusive (Peakychu, Mosslax)
+const DB = [
+  // ─ CONFIRMED from Serebii availablepokemon.shtml (Pokopia dex #001–171) ─
+  {n:"001",name:"Bulbasaur",         s:["Grow"]},
+  {n:"002",name:"Ivysaur",           s:["Grow"]},
+  {n:"003",name:"Venusaur",          s:["Grow","Litter"]},
+  {n:"004",name:"Charmander",        s:["Burn"]},
+  {n:"005",name:"Charmeleon",        s:["Burn"]},
+  {n:"006",name:"Charizard",         s:["Burn","Fly"]},
+  {n:"007",name:"Squirtle",          s:["Water"]},
+  {n:"008",name:"Wartortle",         s:["Water"]},
+  {n:"009",name:"Blastoise",         s:["Water","Trade"]},
+  {n:"010",name:"Pidgey",            s:["Fly","Search"]},
+  {n:"011",name:"Pidgeotto",         s:["Fly","Search"]},
+  {n:"012",name:"Pidgeot",           s:["Fly","Chop"]},
+  {n:"013",name:"Oddish",            s:["Grow"]},
+  {n:"014",name:"Gloom",             s:["Grow"]},
+  {n:"015",name:"Vileplume",         s:["Grow","Litter"]},
+  {n:"016",name:"Bellossom",         s:["Grow","Hype"]},
+  {n:"017",name:"Paras",             s:["Search"]},
+  {n:"018",name:"Parasect",          s:["Search"]},
+  {n:"019",name:"Venonat",           s:["Search"]},
+  {n:"020",name:"Venomoth",          s:["Search"]},
+  {n:"021",name:"Bellsprout",        s:["Grow","Litter"]},
+  {n:"022",name:"Weepinbell",        s:["Grow","Litter"]},
+  {n:"023",name:"Victreebel",        s:["Grow","Chop"]},
+  {n:"024",name:"Slowpoke",          s:["Water","Yawn"]},
+  {n:"025",name:"Slowbro",           s:["Water","Trade"]},
+  {n:"026",name:"Slowking",          s:["Water","Teleport"]},
+  {n:"027",name:"Magnemite",         s:["Generate"]},
+  {n:"028",name:"Magneton",          s:["Generate"]},
+  {n:"029",name:"Magnezone",         s:["Generate","Recycle"]},
+  {n:"030",name:"Onix",              s:["Crush","Bulldoze"]},
+  {n:"031",name:"Steelix",           s:["Crush","Bulldoze"]},
+  {n:"032",name:"Cubone",            s:["Build"]},
+  {n:"033",name:"Marowak",           s:["Build"]},
+  {n:"034",name:"Tyrogue",           s:["Trade"]},
+  {n:"035",name:"Hitmonlee",         s:["Trade"]},
+  {n:"036",name:"Hitmonchan",        s:["Trade"]},
+  {n:"037",name:"Hitmontop",         s:["Trade"]},
+  {n:"038",name:"Koffing",           s:["Recycle"]},
+  {n:"039",name:"Weezing",           s:["Recycle"]},
+  {n:"040",name:"Tangela",           s:["Grow","Litter"]},
+  {n:"041",name:"Tangrowth",         s:["Appraise"]},
+  {n:"042",name:"Scyther",           s:["Chop"]},
+  {n:"043",name:"Scizor",            s:["Chop"]},
+  {n:"044",name:"Pinsir",            s:["Chop","Build"]},
+  {n:"045",name:"Magikarp",          s:["???"]},
+  {n:"046",name:"Gyarados",          s:["Water"]},
+  {n:"047",name:"Ditto",             s:["Transform"]},
+  {n:"048",name:"Hoothoot",          s:["Trade","Fly"]},
+  {n:"049",name:"Noctowl",           s:["Trade","Fly"]},
+  {n:"050",name:"Heracross",         s:["Chop","Build"]},
+  {n:"051",name:"Volbeat",           s:["Hype"]},
+  {n:"052",name:"Illumise",          s:["Hype"]},
+  {n:"053",name:"Gulpin",            s:["Storage"]},
+  {n:"054",name:"Swalot",            s:["Storage"]},
+  {n:"055",name:"Cacnea",            s:["Grow"]},
+  {n:"056",name:"Cacturne",          s:["Grow","Litter"]},
+  {n:"057",name:"Combee",            s:["Litter"]},
+  {n:"058",name:"Vespiquen",         s:["Gather Honey","Search"]},
+  {n:"059",name:"Shellos",           s:["Water"]},
+  {n:"059",name:"Shellos (west Sea)", s:["Water"]},
+  {n:"059",name:"Shellos (east Sea)", s:["Water"]},
+  {n:"060",name:"Gastrodon",         s:["Water","Trade"]},
+  {n:"060",name:"Gastrodon (west Sea)",s:["Water","Trade"]},
+  {n:"060",name:"Gastrodon (east Sea)",s:["Water","Trade"]},
+  {n:"061",name:"Drifloon",          s:["Dream Island"]},
+  {n:"062",name:"Drifblim",          s:["Fly","Gather"]},
+  {n:"063",name:"Drilbur",           s:["Search"]},
+  {n:"064",name:"Excadrill",         s:["Search","Chop"]},
+  {n:"065",name:"Timburr",           s:["Build"]},
+  {n:"066",name:"Gurdurr",           s:["Build"]},
+  {n:"067",name:"Conkeldurr",        s:["Build","Crush"]},
+  {n:"068",name:"Litwick",           s:["Burn"]},
+  {n:"069",name:"Lampent",           s:["Burn"]},
+  {n:"070",name:"Chandelure",        s:[]},
+  {n:"071",name:"Axew",              s:["Chop"]},
+  {n:"072",name:"Fraxure",           s:["Chop"]},
+  {n:"073",name:"Haxorus",           s:["Chop","Litter"]},
+  {n:"074",name:"Goomy",             s:["Water"]},
+  {n:"075",name:"Sliggoo",           s:["Water"]},
+  {n:"076",name:"Goodra",            s:["Water","Trade"]},
+  {n:"077",name:"Cramorant",         s:["Fly","Water"]},
+  {n:"078",name:"Pichu",             s:["Generate"]},
+  {n:"079",name:"Peakychu",          s:["Illuminate"],excl:true},
+  {n:"080",name:"Pikachu",           s:["Generate"]},
+  {n:"081",name:"Raichu",            s:["Generate","Hype"]},
+  {n:"082",name:"Zubat",             s:["Search"]},
+  {n:"083",name:"Golbat",            s:["Search"]},
+  {n:"084",name:"Crobat",            s:["Search","Chop"]},
+  {n:"085",name:"Meowth",            s:["Trade"]},
+  {n:"086",name:"Persian",           s:["Trade","Search"]},
+  {n:"087",name:"Psyduck",           s:["Search"]},
+  {n:"088",name:"Golduck",           s:["Search"]},
+  {n:"089",name:"Growlithe",         s:["Burn","Search"]},
+  {n:"090",name:"Arcanine",          s:["Burn","Search"]},
+  {n:"091",name:"Farfetch'd",        s:["Chop","Build"]},
+  {n:"092",name:"Grimer",            s:["Litter"]},
+  {n:"093",name:"Muk",               s:["Litter"]},
+  {n:"094",name:"Gastly",            s:["Gather","Trade"]},
+  {n:"095",name:"Haunter",           s:["Gather","Trade"]},
+  {n:"096",name:"Gengar",            s:["Gather","Trade"]},
+  {n:"097",name:"Voltorb",           s:["Generate","Explode"]},
+  {n:"098",name:"Electrode",         s:["Generate","Explode"]},
+  {n:"099",name:"Exeggcute",         s:["Grow","Teleport"]},
+  {n:"100",name:"Exeggutor",         s:["Grow","Teleport"]},
+  {n:"101",name:"Happiny",           s:["Trade"]},
+  {n:"102",name:"Chansey",           s:[]},
+  {n:"103",name:"Blissey",           s:["Litter","Trade"]},
+  {n:"104",name:"Elekid",            s:["Generate"]},
+  {n:"105",name:"Electabuzz",        s:["Generate"]},
+  {n:"106",name:"Electivire",        s:["Generate","Crush"]},
+  {n:"107",name:"Lapras",            s:["Water"]},
+  {n:"108",name:"Munchlax",          s:["Bulldoze"]},
+  {n:"109",name:"Mosslax",           s:["Eat"],excl:true},
+  {n:"110",name:"Snorlax",           s:["Trade","Bulldoze","Eat"]},
+  {n:"111",name:"Spinarak",          s:["Litter"]},
+  {n:"112",name:"Ariados",           s:["Litter"]},
+  {n:"113",name:"Mareep",            s:["Generate","Litter"]},
+  {n:"114",name:"Flaaffy",           s:["Generate","Litter"]},
+  {n:"115",name:"Ampharos",          s:["Generate","Trade"]},
+  {n:"116",name:"Azurill",           s:["Water","Hype"]},
+  {n:"117",name:"Marill",            s:["Water","Hype"]},
+  {n:"118",name:"Azumarill",         s:["Water","Build"]},
+  {n:"119",name:"Paldean Wooper",    s:["Litter"]},
+  {n:"120",name:"Clodsire",          s:["Litter","Bulldoze"]},
+  {n:"121",name:"Smeargle",          s:["Paint"]},
+  {n:"122",name:"Torchic",           s:["Burn"]},
+  {n:"123",name:"Combusken",         s:["Burn","Build"]},
+  {n:"124",name:"Blaziken",          s:["Burn","Build"]},
+  {n:"125",name:"Wingull",           s:["Water","Fly"]},
+  {n:"126",name:"Pelipper",          s:["Water","Fly"]},
+  {n:"127",name:"Makuhita",          s:["Build","Bulldoze"]},
+  {n:"128",name:"Hariyama",          s:["Build","Bulldoze"]},
+  {n:"129",name:"Absol",             s:["Chop"]},
+  {n:"130",name:"Piplup",            s:["Water"]},
+  {n:"131",name:"Prinplup",          s:["Water","Trade"]},
+  {n:"132",name:"Empoleon",          s:["Water","Trade"]},
+  {n:"133",name:"Audino",            s:["Trade"]},
+  {n:"134",name:"Trubbish",          s:["Recycle"]},
+  {n:"135",name:"Garbodor",          s:["Recycle","Litter"]},
+  {n:"136",name:"Zorua",             s:["Trade"]},
+  {n:"137",name:"Zoroark",           s:["Trade","Chop"]},
+  {n:"138",name:"Minccino",          s:["Gather"]},
+  {n:"139",name:"Cinccino",          s:["Gather","Recycle"]},
+  {n:"140",name:"Grubbin",           s:["Chop"]},
+  {n:"141",name:"Charjabug",         s:["Generate","Chop"]},
+  {n:"142",name:"Vikavolt",          s:["Generate","Chop"]},
+  {n:"143",name:"Mimikyu",           s:["Trade"]},
+  {n:"144",name:"Pawmi",             s:["Generate"]},
+  {n:"145",name:"Pawmo",             s:["Generate","Crush"]},
+  {n:"146",name:"Pawmot",            s:[]},
+  {n:"147",name:"Tatsugiri (curly)", s:["Trade"]},
+  {n:"147",name:"Tatsugiri (droopy)",s:["Trade"]},
+  {n:"147",name:"Tatsugiri (stretchy)",s:["Trade"]},
+  {n:"148",name:"Ekans",             s:["Search"]},
+  {n:"149",name:"Arbok",             s:["Search"]},
+  {n:"150",name:"Cleffa",            s:["Hype"]},
+  {n:"151",name:"Clefairy",          s:["Hype"]},
+  {n:"152",name:"Clefable",          s:["Hype","Trade"]},
+  {n:"153",name:"Igglybuff",         s:["Hype"]},
+  {n:"154",name:"Jigglypuff",        s:["Hype"]},
+  {n:"155",name:"Wigglytuff",        s:["Hype","Trade"]},
+  {n:"156",name:"Diglett",           s:["Hype"]},
+  {n:"157",name:"Dugtrio",           s:["Hype","Crush"]},
+  {n:"158",name:"Machop",            s:["Build","Gather"]},
+  {n:"159",name:"Machoke",           s:["Build","Gather"]},
+  {n:"160",name:"Machamp",           s:["Build","Gather"]},
+  {n:"161",name:"Geodude",           s:["Crush"]},
+  {n:"162",name:"Graveler",          s:["Crush"]},
+  {n:"163",name:"Golem",             s:[]},
+  {n:"164",name:"Magby",             s:["Burn"]},
+  {n:"165",name:"Magmar",            s:["Burn"]},
+  {n:"166",name:"Magmortar",         s:["Burn","Crush"]},
+  {n:"167",name:"Bonsly",            s:["Bulldoze"]},
+  {n:"168",name:"Sudowoodo",         s:["Trade"]},
+  {n:"169",name:"Murkrow",           s:["Trade","Fly"]},
+  {n:"170",name:"Honchkrow",         s:["Trade","Fly"]},
+  {n:"171",name:"Larvitar",          s:["Crush","Bulldoze"]},
+  // ─ ADDITIONAL (from Serebii partial list & habitat cross-ref; specialties inferred †) ─
+  {n:"???",name:"Eevee",             s:[],             pt:true},
+  {n:"???",name:"Rowlet",            s:["Fly"],inf:true},
+  {n:"???",name:"Dartrix",           s:["Fly"],inf:true},
+  {n:"???",name:"Decidueye",         s:["Fly","Chop"],inf:true},
+  {n:"???",name:"Scorbunny",         s:["Burn"],inf:true},
+  {n:"???",name:"Raboot",            s:["Burn"],inf:true},
+  {n:"???",name:"Cinderace",         s:["Burn","Hype"],inf:true},
+  {n:"???",name:"Riolu",             s:["Build"],inf:true},
+  {n:"???",name:"Lucario",           s:["Build"],inf:true},
+  {n:"???",name:"Kricketot",         s:["Hype"],inf:true},
+  {n:"???",name:"Kricketune",        s:["Hype"],inf:true},
+  {n:"???",name:"Cyndaquil",         s:["Burn"],inf:true},
+  {n:"???",name:"Quilava",           s:["Burn"],inf:true},
+  {n:"???",name:"Typhlosion",        s:["Burn","Trade"],inf:true},
+  {n:"???",name:"Lotad",             s:["Water"],inf:true},
+  {n:"???",name:"Lombre",            s:["Water"],inf:true},
+  {n:"???",name:"Ludicolo",          s:["Water","Hype"],inf:true},
+  {n:"???",name:"Poliwag",           s:["Water"],inf:true},
+  {n:"???",name:"Poliwhirl",         s:["Water"],inf:true},
+  {n:"???",name:"Politoed",          s:["Water"],inf:true},
+  {n:"???",name:"Poliwrath",         s:["Water","Build"],inf:true},
+  {n:"???",name:"Torkoal",           s:["Burn"],inf:true},
+  {n:"???",name:"Chatot",            s:["Hype"],inf:true},
+  {n:"???",name:"Abra",              s:["Teleport"],inf:true},
+  {n:"???",name:"Kadabra",           s:["Teleport"],inf:true},
+  {n:"???",name:"Alakazam",          s:["Teleport"],inf:true},
+  {n:"???",name:"Ralts",             s:["Teleport"],inf:true},
+  {n:"???",name:"Kirlia",            s:["Teleport"],inf:true},
+  {n:"???",name:"Gardevoir",         s:["Teleport"],inf:true},
+  {n:"???",name:"Gallade",           s:["Chop","Build"],inf:true},
+  {n:"???",name:"Vulpix",            s:["Burn"],inf:true},
+  {n:"???",name:"Ninetales",         s:["Burn"],inf:true},
+  {n:"???",name:"Skwovet",           s:["Gather","Search"],inf:true},
+  {n:"???",name:"Greedent",          s:["Gather"],inf:true},
+  {n:"???",name:"Rookidee",          s:["Fly"],inf:true},
+  {n:"???",name:"Corvisquire",       s:["Fly"],inf:true},
+  {n:"???",name:"Corviknight",       s:["Fly"],inf:true},
+  {n:"???",name:"Dratini",           s:["Water"],inf:true},
+  {n:"???",name:"Dragonair",         s:["Water"],inf:true},
+  {n:"???",name:"Dragonite",         s:["Fly","Water"],inf:true},
+  {n:"???",name:"Swablu",            s:["Fly","Litter"],inf:true},
+  {n:"???",name:"Altaria",           s:["Fly"],inf:true},
+  {n:"???",name:"Trapinch",          s:["Bulldoze","Litter"],inf:true},
+  {n:"???",name:"Vibrava",           s:["Bulldoze","Fly"],inf:true},
+  {n:"???",name:"Flygon",            s:["Bulldoze","Fly"],inf:true},
+  {n:"???",name:"Duskull",           s:["Gather"],inf:true},
+  {n:"???",name:"Dusclops",          s:["Gather"],inf:true},
+  {n:"???",name:"Dusknoir",          s:["Gather"],inf:true},
+  {n:"???",name:"Dreepy",            s:["Gather","Search"],inf:true},
+  {n:"???",name:"Drakloak",          s:["Gather","Search"],inf:true},
+  {n:"???",name:"Dragapult",         s:["Gather","Trade"],inf:true},
+  {n:"???",name:"Misdreavus",        s:["Gather"],inf:true},
+  {n:"???",name:"Mismagius",         s:["Gather"],inf:true},
+  {n:"???",name:"Froakie",           s:["Water"],inf:true},
+  {n:"???",name:"Frogadier",         s:["Water"],inf:true},
+  {n:"???",name:"Greninja",          s:["Water"],inf:true},
+  {n:"???",name:"Snivy",             s:["Grow","Litter"],inf:true},
+  {n:"???",name:"Servine",           s:["Grow","Litter"],inf:true},
+  {n:"???",name:"Serperior",         s:["Grow"],inf:true},
+  {n:"???",name:"Girafarig",         s:["Search"],inf:true},
+  {n:"???",name:"Farigiraf",         s:["Search"],inf:true},
+  {n:"???",name:"Sprigarito",        s:["Grow"],inf:true},
+  {n:"???",name:"Floragato",         s:["Grow"],inf:true},
+  {n:"???",name:"Meowscarada",       s:["Grow","Chop"],inf:true},
+  {n:"???",name:"Noibat",            s:["Fly"],inf:true},
+  {n:"???",name:"Noivern",           s:["Fly"],inf:true},
+  {n:"???",name:"Wattrel",           s:["Fly"],inf:true},
+  {n:"???",name:"Kilowattrel",       s:["Fly"],inf:true},
+  {n:"???",name:"Porygon",           s:["Recycle"],inf:true},
+  {n:"???",name:"Porygon-2",         s:["Engineer"],inf:true},
+  {n:"???",name:"Porygon-z",         s:["Rarify"]},
+  {n:"???",name:"Beldum",            s:["Recycle"],inf:true},
+  {n:"???",name:"Metang",            s:["Recycle"],inf:true},
+  {n:"???",name:"Metagross",         s:["Recycle","Crush"],inf:true},
+  {n:"???",name:"Fidough",           s:["Search"],inf:true},
+  {n:"???",name:"Dachsbun",          s:["Search","Trade"],inf:true},
+  {n:"???",name:"Mime Jr.",          s:["Gather","Build"],inf:true},
+  {n:"???",name:"Mr. Mime",          s:["Gather"],inf:true},
+  {n:"???",name:"Dedenne",           s:["Generate"],inf:true},
+  {n:"???",name:"Plusle",            s:["Generate"],inf:true},
+  {n:"???",name:"Minun",             s:["Generate"],inf:true},
+  {n:"???",name:"Pupitar",           s:["Crush","Bulldoze"],inf:true},
+  {n:"???",name:"Tyranitar",         s:["Crush","Bulldoze"],inf:true},
+  {n:"???",name:"Larvesta",          s:["Burn"],inf:true},
+  {n:"???",name:"Volcarona",         s:["Burn","Fly"],inf:true},
+  {n:"???",name:"Charcadet",         s:["Burn"],inf:true},
+  {n:"???",name:"Glimmet",           s:["Litter"],inf:true},
+  {n:"???",name:"Glimmora",          s:["Litter"],inf:true},
+  {n:"???",name:"Gimmighoul",        s:["Collect"],inf:true},
+  {n:"???",name:"Gholdengo",         s:["Trade"],inf:true},
+  {n:"???",name:"Toxel",             s:["Hype"],inf:true},
+  {n:"???",name:"Toxtricity (amped)",s:["Generate","Hype"],inf:true},
+  {n:"???",name:"Toxtricity (low Key)",s:["Generate","Hype"],inf:true},
+  {n:"???",name:"Rolycoly",          s:["Gather"],inf:true},
+  {n:"???",name:"Carkol",            s:["Gather"],inf:true},
+  {n:"???",name:"Volcanion",         s:["Burn","Water"],inf:true},
+  {n:"???",name:"Coalossal",         s:["Burn","Crush"],inf:true},
+  {n:"???",name:"Tinkatink",         s:["Build"],inf:true},
+  {n:"???",name:"Tinkatuff",         s:["Build"],inf:true},
+  {n:"???",name:"Tinkaton",          s:["Build","Crush"],inf:true},
+  {n:"???",name:"Mawile",            s:["Trade","Build"],inf:true},
+  {n:"???",name:"Ceruledge",         s:["Burn","Chop","Trade"],inf:true},
+  {n:"???",name:"Armarouge",         s:["Burn","Trade"],inf:true},
+  {n:"???",name:"Aerodactyl",        s:["Fly"],inf:true},
+  {n:"???",name:"Cranidos",          s:["Crush"],inf:true},
+  {n:"???",name:"Rampardos",         s:["Crush"],inf:true},
+  {n:"???",name:"Shieldon",          s:["Build"],inf:true},
+  {n:"???",name:"Bastiodon",         s:["Build"],inf:true},
+  {n:"???",name:"Tyrunt",            s:["Crush"],inf:true},
+  {n:"???",name:"Tyrantrum",         s:["Crush"],inf:true},
+  {n:"???",name:"Amaura",            s:["Water"],inf:true},
+  {n:"???",name:"Aurorus",           s:["Water"],inf:true},
+  {n:"???",name:"Vaporeon",          s:["Water"],      pt:true},
+  {n:"???",name:"Jolteon",           s:["Generate"],   pt:true},
+  {n:"???",name:"Flareon",           s:["Burn"],       pt:true},
+  {n:"???",name:"Espeon",            s:["Gather"],     pt:true},
+  {n:"???",name:"Umbreon",           s:["Search"],     pt:true},
+  {n:"???",name:"Leafeon",           s:["Grow"],       pt:true},
+  {n:"???",name:"Glaceon",           s:["Water","Trade"],pt:true},
+  {n:"???",name:"Sylveon",           s:["Hype"],       pt:true},
+  {n:"???",name:"Hoppip",            s:["Fly"],inf:true},
+  {n:"???",name:"Skiploom",          s:["Fly"],inf:true},
+  {n:"???",name:"Jumpluff",          s:["Fly"],inf:true},
+  {n:"299",name:"Mewtwo",           s:["Teleport"],leg:true},
+  // ─ LEGENDARIES (special locations, not standard habitats) ─
+  {n:"???",name:"Raikou",            s:["Generate"],inf:true,leg:true},
+  {n:"???",name:"Entei",             s:["Burn"],    inf:true,leg:true},
+  {n:"???",name:"Suicune",           s:["Water"],   inf:true,leg:true},
+  {n:"???",name:"Articuno",          s:["Fly"],     inf:true,leg:true},
+  {n:"???",name:"Zapdos",            s:["Fly","Generate"],inf:true,leg:true},
+  {n:"???",name:"Moltres",           s:["Fly","Burn"],inf:true,leg:true},
+  {n:"???",name:"Lugia",             s:["Fly","Water"],inf:true,leg:true},
+  {n:"???",name:"Ho-oh",             s:["Fly","Burn"],inf:true,leg:true},
+  {n:"???",name:"Kyogre",            s:["Water"],   inf:true,leg:true},
+  {n:"???",name:"Mew",               s:[],          inf:true,leg:true},
+  // ─ NPC / UNIQUE ─
+  {n:"npc",name:"Dj Rotom",          s:["DJ"],      npc:true},
+  {n:"npc",name:"Tinkmaster",        s:["Engineer"],npc:true},
+  {n:"npc",name:"Chef Dente",        s:["Party"],   npc:true},
+  {n:"npc",name:"Smearguru",         s:["Paint"],   npc:true},
+];
+
+// National dex ID → PokeAPI sprite (allows iframe hotlinking)
+const NAT = {
+  Bulbasaur:1,Ivysaur:2,Venusaur:3,Charmander:4,Charmeleon:5,Charizard:6,
+  Squirtle:7,Wartortle:8,Blastoise:9,Pidgey:16,Pidgeotto:17,Pidgeot:18,
+  Oddish:43,Gloom:44,Vileplume:45,Bellossom:182,Paras:46,Parasect:47,
+  Venonat:48,Venomoth:49,Bellsprout:69,Weepinbell:70,Victreebel:71,
+  Slowpoke:79,Slowbro:80,Slowking:199,Magnemite:81,Magneton:82,Magnezone:462,
+  Onix:95,Steelix:208,Cubone:104,Marowak:105,Tyrogue:236,Hitmonlee:106,
+  Hitmonchan:107,Hitmontop:237,Koffing:109,Weezing:110,Tangela:114,Tangrowth:465,
+  Scyther:123,Scizor:212,Pinsir:127,Magikarp:129,Gyarados:130,Lapras:131,Ditto:132,
+  Eevee:133,Vaporeon:134,Jolteon:135,Flareon:136,Espeon:196,Umbreon:197,
+  Leafeon:470,Glaceon:471,Sylveon:700,Hoothoot:163,Noctowl:164,Heracross:214,
+  Volbeat:313,Illumise:314,Gulpin:316,Swalot:317,Cacnea:331,Cacturne:332,
+  Combee:415,Vespiquen:416,Drifloon:425,Drifblim:426,Drilbur:529,Excadrill:530,
+  Timburr:532,Gurdurr:533,Conkeldurr:534,Litwick:607,Lampent:608,Chandelure:609,
+  Axew:610,Fraxure:611,Haxorus:612,Goomy:704,Sliggoo:705,Goodra:706,Cramorant:845,
+  Pichu:172,Pikachu:25,Raichu:26,Zubat:41,Golbat:42,Crobat:169,Meowth:52,Persian:53,
+  Psyduck:54,Golduck:55,Growlithe:58,Arcanine:59,"Farfetch'd":83,Grimer:88,Muk:89,
+  Gastly:92,Haunter:93,Gengar:94,Voltorb:100,Electrode:101,Exeggcute:102,Exeggutor:103,
+  Happiny:440,Chansey:113,Blissey:242,Elekid:239,Electabuzz:125,Electivire:466,
+  Munchlax:446,Snorlax:143,Spinarak:167,Ariados:168,Mareep:179,Flaaffy:180,Ampharos:181,
+  Azurill:298,Marill:183,Azumarill:184,"Paldean Wooper":194,Clodsire:980,Smeargle:235,
+  Torchic:255,Combusken:256,Blaziken:257,Wingull:278,Pelipper:279,Makuhita:296,Hariyama:297,
+  Absol:359,Piplup:393,Prinplup:394,Empoleon:395,Audino:531,Trubbish:568,Garbodor:569,
+  Zorua:570,Zoroark:571,Minccino:572,Cinccino:573,Grubbin:736,Charjabug:737,Vikavolt:738,
+  Mimikyu:778,Pawmi:921,Pawmo:922,Pawmot:923,Ekans:23,Arbok:24,Cleffa:173,Clefairy:35,
+  Clefable:36,Igglybuff:174,Jigglypuff:39,Wigglytuff:40,Diglett:50,Dugtrio:51,
+  Machop:66,Machoke:67,Machamp:68,Geodude:74,Graveler:75,Golem:76,Magby:240,Magmar:126,
+  Magmortar:467,Bonsly:438,Sudowoodo:185,Murkrow:198,Honchkrow:430,Larvitar:246,
+  Pupitar:247,Tyranitar:248,Rowlet:722,Dartrix:723,Decidueye:724,Scorbunny:813,
+  Raboot:814,Cinderace:815,Riolu:447,Lucario:448,Kricketot:401,Kricketune:402,
+  Cyndaquil:155,Quilava:156,Typhlosion:157,Lotad:270,Lombre:271,Ludicolo:272,
+  Poliwag:60,Poliwhirl:61,Politoed:186,Poliwrath:62,Torkoal:324,Chatot:441,
+  Abra:63,Kadabra:64,Alakazam:65,Ralts:280,Kirlia:281,Gardevoir:282,Gallade:475,
+  Vulpix:37,Ninetales:38,Skwovet:819,Greedent:820,Rookidee:821,Corvisquire:822,
+  Corviknight:823,Dratini:147,Dragonair:148,Dragonite:149,Swablu:333,Altaria:334,
+  Trapinch:328,Vibrava:329,Flygon:330,Duskull:353,Dusclops:354,Dusknoir:477,
+  Dreepy:885,Drakloak:886,Dragapult:887,Misdreavus:200,Mismagius:429,
+  Froakie:656,Frogadier:657,Greninja:658,Snivy:495,Servine:496,Serperior:497,
+  Girafarig:203,Farigiraf:981,Sprigarito:906,Floragato:907,Meowscarada:908,
+  Noibat:714,Noivern:715,Wattrel:940,Kilowattrel:941,Porygon:137,"Porygon-2":233,
+  "Porygon-Z":474,Beldum:374,Metang:375,Metagross:376,Fidough:926,Dachsbun:927,
+  "Mime Jr.":439,"Mr. Mime":122,Dedenne:702,Plusle:311,Minun:312,
+  Tinkatink:957,Tinkatuff:958,Tinkaton:959,Mawile:303,Ceruledge:937,Armarouge:936,
+  Aerodactyl:142,Cranidos:408,Rampardos:409,Shieldon:410,Bastiodon:411,
+  Tyrunt:696,Tyrantrum:697,Amaura:698,Aurorus:699,Hoppip:187,Skiploom:188,Jumpluff:189,
+  Glimmet:969,Glimmora:970,Gimmighoul:999,Gholdengo:1000,Toxel:848,
+  "Toxtricity (Amped)":849,"Toxtricity (Low Key)":849,
+  Carkol:838,Rolycoly:837,Coalossal:839,Charcadet:935,Volcarona:637,Larvesta:636,
+  "Shellos (West Sea)":422,"Shellos (East Sea)":422,
+  "Gastrodon (West Sea)":423,"Gastrodon (East Sea)":423,
+  "Tatsugiri (Curly)":943,"Tatsugiri (Droopy)":943,"Tatsugiri (Stretchy)":943,
+  Volcanion:721,Raikou:243,Entei:244,Suicune:245,
+  Articuno:144,Zapdos:145,Moltres:146,Lugia:249,"Ho-Oh":250,Kyogre:382,Mewtwo:150,Mew:151,
+  "DJ Rotom":479,Smeargle:235,
+};
+function spriteURL(num, name) {
+  const id = NAT[name];
+  if (id) return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+  return null;
+}
+
+
+const RARITY = {
+  // Withered Wastelands
+  "tallgrass.Bulbasaur":1,"tallgrass.Squirtle":1,"tallgrass.Geodude":1,"tallgrass.Charmander":1,"tallgrass.Oddish":1,"tallgrass.Charizard":3,
+  "treeshadedtallgrass.Scyther":1,"treeshadedtallgrass.Scizor":1,"treeshadedtallgrass.Bellsprout":1,"treeshadedtallgrass.Skwovet":1,"treeshadedtallgrass.Pinsir":2,"treeshadedtallgrass.Heracross":2,
+  "bouldershadedtallgrass.Timburr":1,"bouldershadedtallgrass.Machop":1,"bouldershadedtallgrass.Gurdurr":2,
+  "hydratedtallgrass.Squirtle":1,"hydratedtallgrass.Sliggoo":1,"hydratedtallgrass.Cramorant":1,"hydratedtallgrass.Wartortle":2,"hydratedtallgrass.Blastoise":3,
+  "seasidetallgrass.Slowpoke":1,"seasidetallgrass.Slowbro":3,"seasidetallgrass.Slowking":3,
+  "elevatedtallgrass.Pidgey":1,"elevatedtallgrass.Hoothoot":1,"elevatedtallgrass.Pidgeotto":2,"elevatedtallgrass.Noctowl":2,
+  "illuminatedtallgrass.Venonat":1,"illuminatedtallgrass.Venomoth":2,
+  "prettyflowerbed.Pidgey":1,"prettyflowerbed.Combee":1,"prettyflowerbed.Eevee":1,"prettyflowerbed.Hoothoot":1,"prettyflowerbed.Magby":1,"prettyflowerbed.Pidgeotto":2,
+  "treeshadedflowerbed.Goomy":1,"treeshadedflowerbed.Cacturne":2,"treeshadedflowerbed.Vikavolt":2,
+  "hydratedflowerbed.Volbeat":2,"hydratedflowerbed.Illumise":2,
+  "fieldofflowers.Vespiquen":1,"fieldofflowers.Ivysaur":2,"fieldofflowers.Venusaur":3,
+  "elevatedflowerbed.Paras":1,"elevatedflowerbed.Parasect":2,
+  "gravewithflowers.Cubone":1,"gravewithflowers.Marowak":2,
+  "flowergarden.Paras":1,"flowergarden.Parasect":2,
+  "freshveggiefield.Drilbur":1,"freshveggiefield.Rowlet":1,"freshveggiefield.Excadrill":2,
+  "ridingwarmupdrafts.Drifloon":1,
+  "campsite.Charmeleon":2,
+  "trainingwaterfall.Tyrogue":1,
+  "tantalizingdiningset.Gulpin":1,
+  "picnicset.Pichu":1,"picnicset.Pikachu":1,
+  "flowerytable.Weepinbell":2,"flowerytable.Victreebel":3,
+  "benchwithgreenery.Bulbasaur":1,"benchwithgreenery.Ivysaur":2,
+  "illuminatedbench.Venonat":1,"illuminatedbench.Venomoth":2,
+  "exerciserestingspot.Hitmonchan":1,
+  "urgentcare.Hitmonlee":1,
+  "gymfirstaid.Hitmontop":1,
+  "roadsign.Shellos (West Sea)":2,"roadsign.Shellos (East Sea)":2,
+  "largeluggagecarrier.Tinkatink":1,"largeluggagecarrier.Gurdurr":1,"largeluggagecarrier.Tinkatuff":2,
+  "lumberjacksworkplace.Axew":1,"lumberjacksworkplace.Fraxure":1,"lumberjacksworkplace.Haxorus":2,
+  "bedwithaplush.Drifloon":1,"bedwithaplush.Slowbro":2,"bedwithaplush.Slowking":2,"bedwithaplush.Munchlax":2,
+  "gentlylitbed.Hoothoot":1,"gentlylitbed.Noctowl":1,
+  "graveoffering.Litwick":1,"graveoffering.Lampent":2,
+  "creepygraveoffering.Litwick":1,"creepygraveoffering.Lampent":1,"creepygraveoffering.Chandelure":2,
+  "chanseyrestingarea.Vileplume":2,"chanseyrestingarea.Bellossom":2,
+  "irresistiblescentandglow.Weepinbell":1,"irresistiblescentandglow.Victreebel":2,
+  "floatingintheshade.Blastoise":2,
+  "smoothtallgrass.Onix":1,
+  "factorystorage.Magnemite":1,
+  "luxurychirpchirpmeal.Pidgeot":1,
+  "berryfeastcampsite.Charizard":2,
+  "raindancesite.Goomy":1,
+  "sunnydaysite.Cacnea":1,
+  "professorstreasuretrove.Tangrowth":1,
+  "crazyloghandicrafts.Axew":1,"crazyloghandicrafts.Fraxure":2,"crazyloghandicrafts.Haxorus":3,
+  "veryberryspace.Goodra":2,
+  "gardenterrace.Venusaur":2,
+  "treeshadedsnoozingsnorlax.Munchlax":1,"treeshadedsnoozingsnorlax.Snorlax":2,
+  "goodoldfashionedantiques.Weezing":1,"goodoldfashionedantiques.Snorlax":1,
+  "nothinbutpokeballs.Tangela":1,
+  "fishingpond.Slowbro":2,"fishingpond.Slowking":2,
+  // Bleak Beach
+  "yellowtallgrass.Spinarak":1,"yellowtallgrass.Grubbin":1,"yellowtallgrass.Ariados":2,
+  "treeshadedyellowtallgrass.Zubat":1,"treeshadedyellowtallgrass.Makuhita":1,"treeshadedyellowtallgrass.Golbat":2,"treeshadedyellowtallgrass.Hariyama":2,
+  "hydratedyellowtallgrass.Azurill":1,"hydratedyellowtallgrass.Piplup":1,"hydratedyellowtallgrass.Marill":2,"hydratedyellowtallgrass.Prinplup":2,
+  "marshytallgrass.Paldean Wooper":1,"marshytallgrass.Clodsire":2,
+  "overgrowthvendingmachine.Mareep":2,
+  "breezyflowerbed.Pawmi":1,"breezyflowerbed.Zorua":1,"breezyflowerbed.Zoroark":2,
+  "tropicalvibes.Gloom":1,"tropicalvibes.Exeggcute":1,"tropicalvibes.Exeggutor":3,
+  "windyflowerbed.Wingull":1,"windyflowerbed.Pelipper":2,
+  "shadedbeach.Exeggcute":1,"shadedbeach.Exeggutor":2,
+  "tropicalseaside.Lapras":1,
+  "restingspot.Meowth":1,
+  "perpetualmess.Growlithe":1,"perpetualmess.Azurill":1,
+  "trashcollectionsite.Trubbish":1,"trashcollectionsite.Koffing":1,"trashcollectionsite.Weezing":2,"trashcollectionsite.Garbodor":2,
+  "trashcancentral.Magneton":2,"trashcancentral.Electabuzz":2,"trashcancentral.Magnezone":3,
+  "trashdisposalsite.Crobat":2,
+  "parkbench.Zubat":1,"parkbench.Voltorb":1,"parkbench.Electrode":3,
+  "tantalizingrestaurant.Pawmo":1,"tantalizingrestaurant.Pawmi":1,
+  "tablesidedeliverycart.Empoleon":1,
+  "chirpchirpmeal.Torchic":1,"chirpchirpmeal.Blaziken":3,
+  "cafespace.Pawmo":1,"cafespace.Pawmot":1,
+  "beachset.Tatsugiri (Stretchy)":2,"beachset.Tatsugiri (Droopy)":2,"beachset.Tatsugiri (Curly)":2,
+  "lightusstage.Electabuzz":1,"lightusstage.Electivire":2,
+  "surpriseinstore.Haunter":1,"surpriseinstore.Zoroark":2,"surpriseinstore.Gengar":2,
+  "nightfestivalvenue.Flaaffy":1,
+  "changingarea.Minccino":1,
+  "privatemakeupstand.Minccino":1,"privatemakeupstand.Cinccino":1,
+  "knittingstation.Mareep":1,"knittingstation.Flaaffy":2,
+  "hotspringshower.Psyduck":1,"hotspringshower.Golduck":2,
+  "resortmealprep.Growlithe":1,"resortmealprep.Torchic":1,"resortmealprep.Combusken":2,
+  "allpackedup.Farfetch'd":1,"allpackedup.Makuhita":1,"allpackedup.Hariyama":2,
+  "fullrecovery.Chansey":1,"fullrecovery.Peakychu":2,
+  "alarmclocksleepzone.Happiny":1,
+  "vendingmachinebreakarea.Grubbin":1,"vendingmachinebreakarea.Charjabug":2,
+  "vendingmachineset.Elekid":1,"vendingmachineset.Electivire":2,
+  "minigamecorner.Magneton":1,"minigamecorner.Magnezone":2,
+  "waterwheelspot.Prinplup":2,"waterwheelspot.Empoleon":3,
+  "furnacespot.Combusken":1,"furnacespot.Blaziken":2,
+  "dock.Marill":1,"dock.Azumarill":2,
+  "spookystudy.Gastly":1,"spookystudy.Haunter":2,
+  "playingpirate.Voltorb":1,"playingpirate.Electrode":1,
+  "workingtheregister.Meowth":1,"workingtheregister.Audino":1,"workingtheregister.Happiny":1,"workingtheregister.Mawile":1,
+  "tinyatelier.Smearguru":1,
+  "gourmetssaltar.Mosslax":1,
+  "pikachuspace.Mimikyu":1,
+  "cutenessoverload.Blissey":2,
+  "welcomingresort.Absol":1,
+  "plainlife.Ampharos":2,
+  "oceanfishingspot.Magikarp":1,"oceanfishingspot.Gastrodon (West Sea)":2,"oceanfishingspot.Gastrodon (East Sea)":2,
+  "marshfishingspot.Grimer":1,"marshfishingspot.Muk":2,"marshfishingspot.Clodsire":2,
+  // Rocky Ridges
+  "redtallgrass.Scorbunny":1,"redtallgrass.Riolu":1,"redtallgrass.Kricketot":1,"redtallgrass.Kricketune":2,"redtallgrass.Cinderace":3,
+  "treeshadedredtallgrass.Diglett":1,"treeshadedredtallgrass.Bonsly":1,"treeshadedredtallgrass.Dugtrio":2,"treeshadedredtallgrass.Sudowoodo":2,
+  "pointytreeshadedrockytallgrass.Dartrix":1,"pointytreeshadedrockytallgrass.Decidueye":3,
+  "hydratedredtallgrass.Lotad":1,"hydratedredtallgrass.Lombre":2,
+  "elevatedredtallgrass.Murkrow":1,"elevatedredtallgrass.Chatot":1,
+  "grassytrainingfield.Machoke":1,"grassytrainingfield.Machamp":2,
+  "gracefulflowerbed.Cleffa":1,"gracefulflowerbed.Clefairy":1,"gracefulflowerbed.Fidough":1,"gracefulflowerbed.Dachsbun":2,"gracefulflowerbed.Clefable":3,
+  "treeshadedgracefulflowerbed.Murkrow":1,"treeshadedgracefulflowerbed.Larvesta":1,"treeshadedgracefulflowerbed.Volcarona":2,
+  "hydratedgracefulflowerbed.Ekans":1,"hydratedgracefulflowerbed.Arbok":2,"hydratedgracefulflowerbed.Politoed":2,
+  "flowergardenstumpstage.Igglybuff":1,"flowergardenstumpstage.Jigglypuff":1,"flowergardenstumpstage.Politoed":2,
+  "toilinthesoil.Tyranitar":2,
+  "upliftingduckweed.Lotad":1,"upliftingduckweed.Ludicolo":2,
+  "mossyrestspot.Larvitar":1,"mossyrestspot.Tyranitar":2,
+  "mossyboulder.Graveler":1,"mossyboulder.Golem":2,
+  "mossyhotspring.Torkoal":1,
+  "openairbath.Raboot":1,
+  "harmonioushotspring.Politoed":1,
+  "pipinghotlava.Charcadet":1,"pipinghotlava.Volcarona":2,
+  "diggingandburning.Magmar":1,
+  "clinkclangironconstruction.Steelix":1,"clinkclangironconstruction.Machamp":2,
+  "creepywhiterocks.Glimmet":1,"creepywhiterocks.Glimmora":2,
+  "containersnacking.Diglett":1,"containersnacking.Glimmet":1,"containersnacking.Glimmora":2,
+  "dinnertablesurprise.Swalot":2,
+  "bestbreadbakery.Fidough":1,"bestbreadbakery.Dachsbun":2,
+  "minikitchen.Magmortar":2,
+  "houseparty.Dugtrio":1,"houseparty.Sudowoodo":1,
+  "lazyphotoalbumscrolling.Toxel":1,
+  "chirpingrecital.Chatot":1,"chirpingrecital.Honchkrow":2,
+  "recitalstage.Jigglypuff":1,"recitalstage.Wigglytuff":2,
+  "boxtotherhythm.Machoke":1,"boxtotherhythm.Riolu":1,"boxtotherhythm.Lucario":1,
+  "musicandmagazines.Kricketot":1,"musicandmagazines.Kricketune":1,"musicandmagazines.DJ Rotom":2,
+  "minimuseum.Gimmighoul":1,"minimuseum.Arcanine":2,
+  "refreshinglockerroom.Raboot":1,"refreshinglockerroom.Cinderace":2,
+  "bronzelandmark.Clefairy":1,"bronzelandmark.Clefable":2,
+  "railroadcrossing.Carkol":1,"railroadcrossing.Rolycoly":1,"railroadcrossing.Coalossal":3,
+  "chefskitchen.Chef Dente":1,
+  "absoluteluxury.Gholdengo":2,
+  "heavyiron.Coalossal":2,
+  "modernliving.Decidueye":2,
+  "hotspringfishingspot.Lotad":1,"hotspringfishingspot.Lombre":1,
+  "magmafishingspot.Arcanine":1,
+  // Sparkling Skylands
+  "pinktallgrass.Trapinch":1,"pinktallgrass.Duskull":1,"pinktallgrass.Swablu":1,"pinktallgrass.Vibrava":2,"pinktallgrass.Flygon":2,
+  "treeshadedpinktallgrass.Sprigarito":1,"treeshadedpinktallgrass.Dreepy":1,"treeshadedpinktallgrass.Pupitar":1,"treeshadedpinktallgrass.Drakloak":2,
+  "hydratedpinktallgrass.Froakie":1,"hydratedpinktallgrass.Frogadier":2,"hydratedpinktallgrass.Greninja":3,
+  "elevatedpinktallgrass.Corvisquire":1,"elevatedpinktallgrass.Wattrel":1,"elevatedpinktallgrass.Kilowattrel":2,"elevatedpinktallgrass.Corviknight":3,
+  "concretepipesecretbase.Cyndaquil":1,"concretepipesecretbase.Quilava":2,
+  "fluffyflowerbed.Vulpix":1,"fluffyflowerbed.Rookidee":1,"fluffyflowerbed.Misdreavus":1,"fluffyflowerbed.Ninetales":2,"fluffyflowerbed.Mismagius":3,
+  "treeshadedfluffyflowerbed.Girafarig":1,"treeshadedfluffyflowerbed.Farigiraf":2,"treeshadedfluffyflowerbed.Servine":2,"treeshadedfluffyflowerbed.Serperior":3,
+  "hydratedfluffyflowerbed.Dratini":1,"hydratedfluffyflowerbed.Poliwhirl":2,"hydratedfluffyflowerbed.Dragonair":3,
+  "watersidedinghy.Dragonite":1,
+  "illuminatedwaterfall.Gyarados":1,
+  "birdsongarden.Altaria":1,
+  "simplebathroom.Dratini":1,"simplebathroom.Dragonair":2,
+  "cyclingreststop.Beldum":1,
+  "fireplacenapspot.Quilava":1,"fireplacenapspot.Typhlosion":2,
+  "surgingpsychicpower.Abra":1,"surgingpsychicpower.Alakazam":2,
+  "fortunetellerstable.Abra":1,"fortunetellerstable.Kadabra":2,
+  "trashsitetv.Dusclops":2,"trashsitetv.Dusknoir":2,
+  "oversizeddumpingground.Tinkatink":1,"oversizeddumpingground.Tinkaton":1,
+  "interrogationdesk.Sprigarito":1,"interrogationdesk.Floragato":1,
+  "sewerholeinspection.Tinkatink":1,"sewerholeinspection.Corviknight":2,"sewerholeinspection.Poliwrath":2,
+  "spotlesswashingstation.Mime Jr.":1,"spotlesswashingstation.Mr. Mime":1,
+  "hometheater.Mismagius":2,
+  "studyarea.Ralts":1,"studyarea.Kirlia":2,
+  "rhythmiclivingroom.Noibat":1,"rhythmiclivingroom.Noivern":2,
+  "squeakyclean.Poliwag":1,
+  "moisturizingmakeupstand.Kirlia":1,"moisturizingmakeupstand.Gardevoir":2,
+  "minilibrary.Gardevoir":2,
+  "gamecornerbattlezone.Porygon-Z":2,
+  "playland.Snivy":1,
+  "workdesk.Porygon-2":2,
+  "officestoreroom.Misdreavus":1,"officestoreroom.Drakloak":1,"officestoreroom.Mismagius":2,"officestoreroom.Dragapult":3,
+  "experimentspace.Alakazam":1,
+  "professorsapprenticeprogram.Metang":1,
+  "researchersdesk.Porygon":1,
+  "publicreadingmaterial.Mime Jr.":1,"publicreadingmaterial.Serperior":2,
+  "heartpoundingsurprisebox.Meowscarada":2,
+  "prankbutton.Frogadier":2,"prankbutton.Greninja":2,
+  "picturesquephotocutoutboard.Plusle":2,"picturesquephotocutoutboard.Minun":2,
+  "tirepark.Dedenne":1,
+  "naturesmarket.Raichu":1,
+  "constructionsitegenerator.Conkeldurr":1,
+  "dojotraining.Poliwrath":1,"dojotraining.Gallade":2,
+  "evilorganizationhq.Persian":1,
+  "nineflames.Ninetales":1,
+  "plushcentral.Drifloon":1,"plushcentral.Drifblim":1,
+  "gamersparadise.Metagross":2,
+  "toppop.Typhlosion":2,
+  // Special
+  "ampedrocstage.Toxtricity (Amped)":1,
+  "lowkeyrocstage.Toxtricity (Low Key)":1,
+  "maliciousknitesshrine.Ceruledge":1,
+  "auspiciousknitesshrine.Armarouge":2,
+  "wingfossildisplay.Aerodactyl":1,
+  "skullfossildisplay.Cranidos":1,
+  "headbuttfossildisplay.Rampardos":1,
+  "armorfossildisplay.Shieldon":1,
+  "shieldfossildisplay.Bastiodon":1,
+  "jawfossildisplay.Tyrunt":1,
+  "despotfossildisplay.Tyrantrum":1,
+  "sailfossildisplay.Amaura":1,
+  "tundrafossildisplay.Aurorus":1,
+  "boundlessbluebeverage.Vaporeon":1,
+  "electrifyingpotatoes.Jolteon":1,
+  "burninghotspice.Flareon":1,
+  "elegantdaytimetreats.Espeon":1,
+  "darkchocolatecookies.Umbreon":1,
+  "leafygreenssandwich.Leafeon":1,
+  "chillyshavedice.Glaceon":1,
+  "lovelyribboncake.Sylveon":1,
+  "yellowcarpet.Hoppip":1,"yellowcarpet.Skiploom":2,"yellowcarpet.Jumpluff":2,
+  "fieldtripfriends.Skiploom":1,
+  "dandelionlunchtime.Jumpluff":1,
+};
+function getRarity(slug, name) { return RARITY[slug+'.'+name] || 0; }
+
+const ENV = {
+  "Absol":{l:"Dark"},
+  "Ampharos":{l:"Bright"},
+  "Arcanine":{t:"Warm"},
+  "Ariados":{h:"Humid"},
+  "Azumarill":{h:"Humid"},
+  "Azurill":{h:"Humid"},
+  "Bellossom":{l:"Bright"},
+  "Bellsprout":{h:"Humid"},
+  "Blastoise":{h:"Humid"},
+  "Blaziken":{t:"Warm"},
+  "Bonsly":{h:"Dry"},
+  "Bulbasaur":{l:"Bright"},
+  "Cacnea":{l:"Bright",h:"Dry",t:"Warm"},
+  "Cacturne":{l:"Dark",h:"Dry"},
+  "Charizard":{t:"Warm"},
+  "Charmander":{t:"Warm"},
+  "Charmeleon":{t:"Warm"},
+  "Chatot":{t:"Warm"},
+  "Clodsire":{h:"Humid"},
+  "Combee":{l:"Bright"},
+  "Combusken":{t:"Warm"},
+  "Cubone":{h:"Dry"},
+  "Drifblim":{t:"Warm"},
+  "Drifloon":{t:"Warm"},
+  "Drilbur":{l:"Dark"},
+  "Excadrill":{l:"Dark"},
+  "Farfetch'd":{t:"Warm"},
+  "Flaaffy":{l:"Bright"},
+  "Gloom":{h:"Humid"},
+  "Golem":{l:"Dark"},
+  "Goodra":{h:"Humid"},
+  "Graveler":{l:"Dark"},
+  "Growlithe":{t:"Warm"},
+  "Gulpin":{h:"Humid"},
+  "Hariyama":{l:"Bright"},
+  "Hitmonchan":{l:"Bright"},
+  "Hitmonlee":{l:"Bright"},
+  "Hoppip":{l:"Bright"},
+  "Ivysaur":{l:"Bright"},
+  "Jumpluff":{l:"Bright"},
+  "Kricketot":{l:"Dark"},
+  "Kricketune":{l:"Dark"},
+  "Lapras":{h:"Humid"},
+  "Lombre":{h:"Humid"},
+  "Lotad":{h:"Humid"},
+  "Ludicolo":{h:"Humid"},
+  "Magby":{l:"Bright",t:"Warm"},
+  "Magmar":{t:"Warm"},
+  "Magmortar":{t:"Warm"},
+  "Magnemite":{l:"Bright"},
+  "Magneton":{l:"Bright"},
+  "Makuhita":{l:"Bright"},
+  "Marill":{h:"Humid"},
+  "Marowak":{h:"Dry"},
+  "Munchlax":{t:"Warm"},
+  "Oddish":{l:"Dark",h:"Humid"},
+  "Onix":{l:"Dark",h:"Dry"},
+  "Paldean Wooper":{h:"Humid"},
+  "Paras":{h:"Humid"},
+  "Parasect":{h:"Humid"},
+  "Pelipper":{h:"Humid"},
+  "Pichu":{l:"Bright"},
+  "Pidgeotto":{l:"Bright"},
+  "Pidgey":{l:"Bright"},
+  "Pikachu":{l:"Bright"},
+  "Pinsir":{l:"Bright"},
+  "Piplup":{h:"Humid"},
+  "Psyduck":{h:"Humid"},
+  "Raichu":{l:"Bright"},
+  "Riolu":{l:"Dark"},
+  "Scyther":{l:"Bright"},
+  "Skiploom":{l:"Bright"},
+  "Sliggoo":{h:"Humid"},
+  "Slowbro":{h:"Humid"},
+  "Slowking":{h:"Humid"},
+  "Slowpoke":{h:"Humid"},
+  "Smeargle":{l:"Bright"},
+  "Spinarak":{h:"Humid"},
+  "Squirtle":{l:"Bright",h:"Humid"},
+  "Sudowoodo":{h:"Dry"},
+  "Swalot":{h:"Humid"},
+  "Tangrowth":{h:"Humid"},
+  "Timburr":{l:"Bright"},
+  "Torchic":{t:"Warm"},
+  "Torkoal":{t:"Warm"},
+  "Venusaur":{l:"Bright"},
+  "Victreebel":{h:"Humid"},
+  "Wartortle":{h:"Humid"},
+  "Weepinbell":{h:"Humid"},
+  "Wingull":{h:"Humid"}
+};
+function getEnv(name){return ENV[name]||{};}
+
+function envIcon(e){return e==='Bright'?'☀️ ':e==='Dark'?'🌑 ':e==='Humid'?'💧 ':e==='Dry'?'🏜️ ':e==='Warm'?'🔥 ':'';}
+function rarityStars(r) {
+  if(!r) return '';
+  return '<span class="rstar r'+r+'">'+'★'.repeat(r)+'</span>';
+}
+
+const zoneName = {WW:"Withered Wastelands",BB:"Bleak Beach",RR:"Rocky Ridges",SS:"Sparkling Skylands",SP:"Special"};
+
+// Time/weather data — NintendoLife complete Pokédex
+// t: 'A'=all day  'D'=dawn-dusk (not night)  'N'=night only
+// w: 'A'=all  'C'=sunny+cloudy (no rain)  'R'=rain only  'S'=sunny only
+const TW = {
+  Oddish:{t:'N',w:'A'},Venonat:{t:'N',w:'A'},Venomoth:{t:'N',w:'A'},
+  Hoothoot:{t:'N',w:'A'},Noctowl:{t:'N',w:'A'},
+  Zubat:{t:'N',w:'A'},Golbat:{t:'N',w:'A'},Crobat:{t:'N',w:'A'},
+  Gastly:{t:'N',w:'A'},Haunter:{t:'N',w:'A'},Gengar:{t:'N',w:'A'},
+  Cacturne:{t:'N',w:'A'},Murkrow:{t:'N',w:'A'},Honchkrow:{t:'N',w:'A'},
+  Misdreavus:{t:'N',w:'A'},Clefairy:{t:'N',w:'A'},Clefable:{t:'N',w:'A'},
+  Duskull:{t:'N',w:'A'},Dusknoir:{t:'N',w:'A'},Umbreon:{t:'N',w:'A'},
+  Pidgey:{t:'D',w:'A'},Pidgeotto:{t:'D',w:'A'},
+  Wingull:{t:'D',w:'A'},Pelipper:{t:'D',w:'A'},
+  Fidough:{t:'D',w:'A'},Dachsbun:{t:'D',w:'A'},Espeon:{t:'D',w:'A'},
+  Charmander:{t:'A',w:'C'},Charmeleon:{t:'A',w:'C'},Charizard:{t:'A',w:'C'},
+  Goomy:{t:'A',w:'R'},Sliggoo:{t:'A',w:'R'},Empoleon:{t:'A',w:'R'},
+  Cacnea:{t:'A',w:'S'},
+};
+function getTW(name){return TW[name]||{t:'A',w:'A'};}
+function twBadges(name,isLeg){
+  if(isLeg)return '';
+  const {t,w}=getTW(name);
+  const p=[];
+  if(t==='N')p.push('<span class="twb twnight">🌙 Night only</span>');
+  else if(t==='D')p.push('<span class="twb twday">☀️ Dawn–Dusk</span>');
+  if(w==='C')p.push('<span class="twb twsun">☀️⛅ Not in rain</span>');
+  else if(w==='R')p.push('<span class="twb twrain">🌧️ Rain only</span>');
+  else if(w==='S')p.push('<span class="twb twsun">☀️ Sunny only</span>');
+  return p.length?'<div class="twrow">'+p.join('')+'</div>':'';
+}
+
+function card(p, delay) {
+  const url = spriteURL(p.n, p.name);
+  const spr = url
+    ? `<img src="${url}" alt="${p.name}" onerror="this.outerHTML='<div class=fp>🌟</div>'">`
+    : `<div class="fp">✨</div>`;
+  const specs = p.s.length === 0
+    ? `<span class="bi bunk">Unknown</span>`
+    : p.s.map(x => x==='???' ? `<span class="bi bunk">???</span>` :
+        `<span class="${specCls(x)}">${x}</span>`
+      ).join('');
+  const infTag = p.inf ? `<span style="color:var(--mu);font-size:10px;margin-left:2px">†</span>` : '';
+  const habs = PH[p.name];
+  const habsH = habs
+    ? habs.map(h =>
+        `<span class="hab">${habImg(h.id) ? `<img src="${habImg(h.id)}" alt="" onerror="this.style.display='none'">` : ''}<span class="habtext"><span class="habname">${h.name}${rarityStars(getRarity(h.slug,p.name))}</span><span class="habreq">${h.req}</span></span></span>`
+      ).join('')
+    : (p.npc ? '' : `<span class="hno">No habitat data found</span>`);
+  const num = (p.n !== '???' && p.n !== 'npc') ? `#${p.n}` : (p.npc ? 'NPC' : '?');
+  const tags = [
+    p.excl ? `<div class="ctag">★ Game-Exclusive</div>` : '',
+    p.pt   ? `<div class="ctag pt">🏙️ Palette Town only</div>` : '',
+    p.npc  ? `<div class="ctag">NPC Pokémon</div>` : '',
+    p.leg  ? `<div class="ctag gold">✦ Legendary</div>` : '',
+    p.inf  ? `<div class="ctag">† Specialty inferred</div>` : '',
+  ].join('');
+  return `<div class="${p.npc?'card uc':'card'}" style="animation-delay:${delay}ms">
+    <div class="cnum">${num}</div>
+    <div class="sw">${spr}</div>
+    <div class="cn${p.npc?' uq':''}">${p.name}</div>
+    ${twBadges(p.name,p.leg||p.npc)}
+    ${tags}
+    ${habsH ? `<div class="div"></div><div class="sl">Habitats</div><div class="habs">${habsH}</div>` : ''}
+    <div class="div"></div>
+    <div class="sl">Specialties${infTag}</div>
+    <div class="bgs">${specs}</div>
+  ${(()=>{
+    if(p.npc||p.leg) return '';
+    const env=getEnv(p.name);
+    const bits=[];
+    if(env.l) bits.push('<span class="envb env'+env.l.toLowerCase()+'">'+envIcon(env.l)+env.l+'</span>');
+    if(env.h) bits.push('<span class="envb env'+env.h.toLowerCase()+'">'+envIcon(env.h)+env.h+'</span>');
+    if(env.t) bits.push('<span class="envb env'+env.t.toLowerCase()+'">'+envIcon(env.t)+env.t+'</span>');
+    const envHtml = bits.length ? bits.join('') : '<span class="envb envneutral">🌿 neutral</span>';
+    return '<div class="div"></div><div class="envbits" style="margin-top:2px">'+envHtml+'</div>';
+  })()}
+  ${!p.npc && !p.leg && PH[p.name] ? `<div class="starkey"><span class="r1">★</span> common · <span class="r2">★★</span> rare · <span class="r3">★★★</span> very rare</div>` : ''}
+  </div>`;
+}
+
+const ZONE_NAMES = {WW:"Withered Wastelands",BB:"Bleak Beach",RR:"Rocky Ridges",SS:"Sparkling Skylands",SP:"Special"};
+const LOC_LABELS = {pt:"🏙️ Palette Town only",event:"⭐ Event only"};
+
+let currentView = 'pokemon';
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('vbtn-pokemon').classList.toggle('active', v==='pokemon');
+  document.getElementById('vbtn-habitat').classList.toggle('active', v==='habitat');
+  // show/hide filters that don't apply to habitat view
+  document.getElementById('tf').closest('.sg').style.display = v==='habitat' ? 'none' : '';
+  document.getElementById('wf').closest('.sg').style.display = v==='habitat' ? 'none' : '';
+  go();
+}
+
+
+function habDisplayName(name) {
+  const nouns = [
+    'Tall Grass','Flower Bed','Hot Spring','Fishing Spot','Dining Set',
+    'Luggage Carrier','Resting Spot','Rest Spot','Veggie Field','Vending Machine',
+    'Delivery Cart','Festival Venue','Makeup Stand','Locker Room','Living Room',
+    'Surprise Box','Game Corner','Rock Stage','Photo Cutout Board',
+    'Campsite','Waterfall','Workplace','Antiques','Offering',
+    'Storage','Terrace','Atelier','Museum','Landmark','Crossing',
+    'Kitchen','Paradise','Storeroom','Library','Study'
+  ];
+  for (const n of nouns) {
+    const idx = name.lastIndexOf(n);
+    if (idx > 0) {
+      const before = name.slice(0, idx).trim();
+      if (before.length > 0) return before + '<br>' + n;
+    }
+  }
+  return name;
+}
+
+function habCard(slug, h, delay) {
+  const img = h.id && !h.id.includes('e')
+    ? `<img class="hcard-img" src="https://pub-63d9fdd35f184b7c82eb49a6ebead636.r2.dev/habitats/${String(h.id).padStart(3,'0')}.png" alt="${h.name}" onerror="this.outerHTML='<div class=hcard-img-placeholder>🏡</div>'">`
+    : `<div class="hcard-img-placeholder">🏡</div>`;
+  const zoneLbl = ZONE_NAMES[h.zone]||'';
+  const locBadge = h.loc ? `<span class="hcard-loc loc-${h.loc}">${LOC_LABELS[h.loc]||h.loc}</span>` : '';
+  const pokes = h.p.map(name => {
+    const nat = NAT[name];
+    const spriteUrl = nat ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${nat}.png` : null;
+    const r = getRarity(slug, name);
+    const starEl = r ? `<div class="hpoke-star ${r===3?'r3':r===2?'r2':'r1'}">${'★'.repeat(r)}</div>` : '';
+    const spr = spriteUrl
+      ? `<img src="${spriteUrl}" alt="${name}" onerror="this.style.opacity='.3'">`
+      : `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:20px">✨</div>`;
+    return `<div class="hpoke">${spr}<div class="hpoke-name">${name}</div>${starEl}</div>`;
+  }).join('');
+  return `<div class="hcard" style="animation-delay:${delay}ms">
+    <div class="cnum" style="padding:10px 12px 0">#${h.id}</div>
+    ${img}
+    <div class="hcard-body">
+      <div class="hcard-name">${habDisplayName(h.name)}</div>
+      <div class="hcard-req">${h.req}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center">
+        <span class="hcard-zone zone-${h.zone}">${zoneLbl}</span>
+        ${locBadge}
+      </div>
+      <div class="hcard-divider"></div>
+      <div class="hcard-pokes">${pokes}</div>
+    </div>
+  </div>`;
+}
+
+function goHabitat() {
+  const nm = document.getElementById('nf').value.trim().toLowerCase();
+  const zn = document.getElementById('zf').value;
+  const entries = Object.entries(HD).filter(([slug, h]) => {
+    const mn = !nm || h.name.toLowerCase().includes(nm) || h.p.some(p => p.toLowerCase().includes(nm));
+    let mz = !zn || h.zone === zn;
+    if (zn === 'NPC' || zn === 'LEG') mz = false;
+    return mn && mz;
+  });
+  const g = document.getElementById('grid');
+  document.getElementById('rc').innerHTML = `<strong>${entries.length}</strong> Habitats`;
+  if (!entries.length) {
+    g.innerHTML = `<div class="empty"><div class="ei">🔍</div><h3>No habitats found</h3><p>Try a different search or zone.</p></div>`;
+    return;
+  }
+  g.innerHTML = entries.map(([slug,h],i) => habCard(slug, h, i*15)).join('');
+}
+
+function go() {
+  if (currentView === 'habitat') { goHabitat(); return; }
+
+  const sp = document.getElementById('sf').value;
+  const nm = document.getElementById('nf').value.trim().toLowerCase();
+  const zn = document.getElementById('zf').value;
+  const tf = document.getElementById('tf').value;
+  const wf = document.getElementById('wf').value;
+  const res = DB.filter(p => {
+    const ms = !sp || p.s.includes(sp);
+    const mn = !nm || p.name.toLowerCase().includes(nm);
+    let mz = true;
+    if (zn) {
+      if (zn === 'NPC') mz = !!p.npc;
+      else if (zn === 'LEG') mz = !!p.leg;
+      else {
+        const ph = PH[p.name];
+        mz = ph ? ph.some(h => h.zone === zn) : false;
+      }
+    }
+    const {t,w} = getTW(p.name);
+    const mt = !tf || (p.leg||p.npc ? false : t===tf);
+    const mw = !wf || (p.leg||p.npc ? false :
+      wf==='S' ? (w==='A'||w==='C'||w==='S') :
+      wf==='C' ? (w==='A'||w==='C') :
+      wf==='R' ? (w==='A'||w==='R') : true);
+    return ms && mn && mz && mt && mw;
+  });
+  const g = document.getElementById('grid');
+  document.getElementById('rc').innerHTML = `<strong>${res.length}</strong> Pokémon`;
+  if (!res.length) {
+    g.innerHTML = `<div class="empty"><div class="ei">🔍</div><h3>No Pokémon found</h3><p>Try different search terms or clear the zone filter.</p></div>`;
+    return;
+  }
+  g.innerHTML = res.map((p,i) => card(p, i*20)).join('');
+}
+function clr() {
+  ['sf','nf','zf','tf','wf'].forEach(id => document.getElementById(id).value='');
+  go();
+}
+document.getElementById('nf').addEventListener('keydown', e => { if (e.key==='Enter') go(); });
+
+// Stats
+const totalHabs = Object.keys(HD).length;
+const withHab = DB.filter(p=>!p.npc&&PH[p.name]).length;
+document.getElementById('rs').textContent = `${totalHabs} habitats · ${withHab} Pokémon with habitat data · hover habitat chips for requirements`;
+go();
+</script>
+</body>
+</html>
