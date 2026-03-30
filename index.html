@@ -95,7 +95,7 @@
   .hno{font-size:11px;font-weight:600;color:var(--mu);font-style:italic}
   .inforow{display:flex;align-items:center;gap:5px;font-size:10px;margin-top:2px}
   .envbits{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:7px;margin-top:5px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
-  .envb{font-size:11px;font-weight:700;border-radius:20px;padding:2px 7px;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;text-transform:lowercase}
+  .envb{font-size:11px;font-weight:700;border-radius:20px;padding:2px 7px;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;text-transform:lowercase;cursor:pointer;transition:opacity .15s}.envb:hover{opacity:.7}
   .envbright{background:rgba(255,210,50,.15);color:#a07000;border:1px solid rgba(230,180,30,.3)}
   .envdark{background:rgba(40,30,80,.12);color:#5533aa;border:1px solid rgba(80,60,140,.25)}
   .envhumid{background:rgba(60,150,220,.13);color:#1060bb;border:1px solid rgba(60,140,210,.28)}
@@ -121,14 +121,14 @@
   .twsun{background:rgba(255,180,40,.13);color:#7a4800;border:1px solid rgba(230,160,30,.28)}
   .twrain{background:rgba(80,140,220,.14);color:#1a4880;border:1px solid rgba(80,130,210,.28)}
 
-  .flav{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;white-space:nowrap;margin-bottom:2px}
+  .flav{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;white-space:nowrap;margin-bottom:2px;cursor:pointer;transition:opacity .15s}.flav:hover{opacity:.7}
   .fsweet{background:rgba(255,182,193,.25);color:#b02060;border:1px solid rgba(220,100,140,.3)}
   .fspicy{background:rgba(240,100,60,.15);color:#cc3300;border:1px solid rgba(220,80,40,.3)}
   .fdry{background:rgba(130,100,220,.15);color:#5533aa;border:1px solid rgba(120,90,200,.3)}
   .fbitter{background:rgba(80,160,80,.15);color:#2a7a2a;border:1px solid rgba(70,150,70,.3)}
   .fsour{background:rgba(210,200,40,.18);color:#7a7000;border:1px solid rgba(200,190,30,.35)}
   .favrow{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:5px;margin-top:5px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
-  .favbit{display:inline-flex;align-items:center;font-size:10px;font-weight:600;border-radius:20px;padding:2px 8px;background:rgba(150,150,150,.1);color:#666;border:1px solid rgba(150,150,150,.2);white-space:nowrap}
+  .favbit{display:inline-flex;align-items:center;font-size:10px;font-weight:600;border-radius:20px;padding:2px 8px;background:rgba(150,150,150,.1);color:#666;border:1px solid rgba(150,150,150,.2);white-space:nowrap;cursor:pointer;transition:opacity .15s}.favbit:hover{opacity:.7}
   .backbtn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;background:transparent;border:1px solid rgba(155,111,212,.3);border-radius:20px;padding:6px 16px;cursor:pointer;color:var(--pu);transition:all .2s;margin-bottom:12px;display:none}
   .backbtn:hover{background:rgba(155,111,212,.08)}
   .backbtn.visible{display:inline-flex;align-items:center;gap:6px}
@@ -2150,6 +2150,13 @@ const TW = {
 
 function getFlavIcon(f){return f==='Sweet'?'🍬':f==='Spicy'?'🌶️':f==='Dry'?'🫐':f==='Bitter'?'🌿':f==='Sour'?'🍋':'';}
 function getFlavCls(f){return f==='Sweet'?'fsweet':f==='Spicy'?'fspicy':f==='Dry'?'fdry':f==='Bitter'?'fbitter':f==='Sour'?'fsour':'';}
+
+function filterByPref(type, val) {
+  document.getElementById('pf').value = type + ':' + val;
+  ['sf','nf','zf','tf','wf','cf','rf'].forEach(id => document.getElementById(id).value='');
+  if(currentView !== 'pokemon') setView('pokemon');
+  else go();
+}
 function fmtReq(r){return r?r.replace(/(\w[\w\s-]*?)\s*\(any\)/gi,(_,item)=>"Any "+item.trim()):r;}
 function getTW(name){return TW[name]||{t:'A',w:'A'};}
 function twBadges(name,isLeg){
@@ -2194,7 +2201,7 @@ function card(p, delay) {
     <div class="cnum">${num}</div>
     <div class="sw">${spr}</div>
     <div class="cn${p.npc?' uq':''}">${p.name}</div>
-    ${(()=>{const fl=FLAV[p.name];return fl?'<span class="flav '+getFlavCls(fl)+'">'+getFlavIcon(fl)+' '+fl.toLowerCase()+'</span>':'';})()}
+    ${(()=>{const fl=FLAV[p.name];return fl?'<span class="flav '+getFlavCls(fl)+'" onclick="filterByPref(\'flavor\',\''+fl+'\')" >'+getFlavIcon(fl)+' '+fl.toLowerCase()+'</span>':'';})()}
     ${tags}
     ${habsH ? `<div class="div"></div><div class="sl">Habitats</div><div class="habs">${habsH}</div><div class="starkey"><span class="r1">★</span> common · <span class="r2">★★</span> rare · <span class="r3">★★★</span> very rare</div>` : ''}
     <div class="div"></div>
@@ -2204,9 +2211,9 @@ function card(p, delay) {
     if(p.npc||p.leg) return '';
     const env=getEnv(p.name);
     const bits=[];
-    if(env.l) bits.push('<span class="envb env'+env.l.toLowerCase()+'">'+envIcon(env.l)+env.l+'</span>');
-    if(env.h) bits.push('<span class="envb env'+env.h.toLowerCase()+'">'+envIcon(env.h)+env.h+'</span>');
-    if(env.t) bits.push('<span class="envb env'+env.t.toLowerCase()+'">'+envIcon(env.t)+env.t+'</span>');
+    if(env.l) bits.push('<span class="envb env'+env.l.toLowerCase()+'" onclick="filterByPref(\'env\',\''+env.l+'\')" >'+envIcon(env.l)+env.l+'</span>');
+    if(env.h) bits.push('<span class="envb env'+env.h.toLowerCase()+'" onclick="filterByPref(\'env\',\''+env.h+'\')" >'+envIcon(env.h)+env.h+'</span>');
+    if(env.t) bits.push('<span class="envb env'+env.t.toLowerCase()+'" onclick="filterByPref(\'env\',\''+env.t+'\')" >'+envIcon(env.t)+env.t+'</span>');
     const envHtml = bits.length ? bits.join('') : '<span class="envb envneutral">🌿 neutral</span>';
     const tw=getTW(p.name);
     const twBits=[];
@@ -2221,7 +2228,7 @@ function card(p, delay) {
   ${(()=>{
     const fv=FAVITEMS[p.name];
     if(!fv||!fv.length) return '';
-    return '<div class="div"></div><div class="sl">Likes</div><div class="favrow">'+fv.map(f=>'<span class="favbit">'+f+'</span>').join('')+'</div>';
+    return '<div class="div"></div><div class="sl">Likes</div><div class="favrow">'+fv.map(f=>'<span class="favbit" onclick="filterByPref(\'like\',\''+f+'\')" >'+f+'</span>').join('')+'</div>';
   })()}
   </div>`;
 }
@@ -2404,6 +2411,7 @@ function go() {
     const mp = !pf || (
       pfType==='env' ? (pfVal==='neutral' ? envVals.length===0 : envVals.includes(pfVal)) :
       pfType==='like' ? (FAVITEMS[p.name] && FAVITEMS[p.name].some(f => f.toLowerCase()===pfVal.toLowerCase())) :
+      pfType==='flavor' ? (FLAV[p.name] === pfVal) :
       true);
     return ms && mn && mz && mt && mw && mp;
   });
