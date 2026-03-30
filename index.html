@@ -54,7 +54,7 @@
   .ctag.gold{background:rgba(220,170,40,.18);color:#7a5800;border:1px solid rgba(220,170,40,.35)}
   .sl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-top:2px;margin-bottom:0}
   .bgs{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:7px;margin-top:5px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
-  .bi{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:3px 8px;border-radius:30px;font-size:11px;font-weight:700;white-space:nowrap;text-transform:lowercase}
+  .bi{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:3px 8px;border-radius:30px;font-size:11px;font-weight:700;white-space:nowrap;text-transform:lowercase;cursor:pointer;transition:opacity .15s}.bi:hover{opacity:.7}
   .bi img{width:14px;height:14px;object-fit:contain;flex-shrink:0}
   .bunk{background:rgba(122,122,122,.1);color:var(--mu);border:1px solid rgba(122,122,122,.2)}
   .bgrow{background:rgba(100,190,90,.15);color:#2d8a22;border:1px solid rgba(100,190,90,.3)}
@@ -259,6 +259,13 @@
     <div class="sg" id="pf-wrap" style="max-width:160px">
       <select id="pf" onchange="go()">
         <option value="">Preferences</option>
+        <optgroup label="Flavor">
+          <option value="flavor:Sweet">🍬 Sweet</option>
+          <option value="flavor:Spicy">🌶️ Spicy</option>
+          <option value="flavor:Dry">🫐 Dry</option>
+          <option value="flavor:Bitter">🌿 Bitter</option>
+          <option value="flavor:Sour">🍋 Sour</option>
+        </optgroup>
         <optgroup label="Environment">
           <option value="env:Bright">☀️ Bright</option>
           <option value="env:Dark">🌑 Dark</option>
@@ -2151,6 +2158,12 @@ const TW = {
 function getFlavIcon(f){return f==='Sweet'?'🍬':f==='Spicy'?'🌶️':f==='Dry'?'🫐':f==='Bitter'?'🌿':f==='Sour'?'🍋':'';}
 function getFlavCls(f){return f==='Sweet'?'fsweet':f==='Spicy'?'fspicy':f==='Dry'?'fdry':f==='Bitter'?'fbitter':f==='Sour'?'fsour':'';}
 
+function filterBySpec(spec) {
+  document.getElementById('sf').value = spec;
+  ['nf','zf','tf','wf','pf','cf','rf'].forEach(id => document.getElementById(id).value='');
+  if(currentView !== 'pokemon') setView('pokemon');
+  else go();
+}
 function filterByPref(type, val) {
   document.getElementById('pf').value = type + ':' + val;
   ['sf','nf','zf','tf','wf','cf','rf'].forEach(id => document.getElementById(id).value='');
@@ -2179,7 +2192,7 @@ function card(p, delay) {
   const specs = p.s.length === 0
     ? `<span class="bi bunk">Unknown</span>`
     : p.s.map(x => x==='???' ? `<span class="bi bunk">???</span>` :
-        `<span class="${specCls(x)}">${x}</span>`
+        `<span class="${specCls(x)}" onclick="filterBySpec('${x}')">${x}</span>`
       ).join('');
   const infTag = p.inf ? `<span style="color:var(--mu);font-size:10px;margin-left:2px">†</span>` : '';
   const habs = PH[p.name];
