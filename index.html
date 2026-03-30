@@ -102,6 +102,7 @@
   .envdry{background:rgba(210,160,80,.14);color:#995510;border:1px solid rgba(200,150,60,.28)}
   .envwarm{background:rgba(230,100,50,.13);color:#cc3300;border:1px solid rgba(220,90,40,.28)}
   .envneutral{background:rgba(100,160,100,.12);color:#2a8030;border:1px solid rgba(100,160,100,.25)}
+  .envcool{background:rgba(160,220,240,.15);color:#0a6080;border:1px solid rgba(120,200,230,.3)}
   .infokey{font-weight:700;color:var(--mu);white-space:nowrap;flex-shrink:0}
   .infoval{color:var(--mu);font-style:italic}
   .div{width:100%;height:1px;background:rgba(155,111,212,.1);margin:2px 0}
@@ -128,6 +129,9 @@
   .fsour{background:rgba(210,200,40,.18);color:#7a7000;border:1px solid rgba(200,190,30,.35)}
   .favrow{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:5px;margin-top:5px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
   .favbit{display:inline-flex;align-items:center;font-size:10px;font-weight:600;border-radius:20px;padding:2px 8px;background:rgba(150,150,150,.1);color:#666;border:1px solid rgba(150,150,150,.2);white-space:nowrap}
+  .backbtn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;background:transparent;border:1px solid rgba(155,111,212,.3);border-radius:20px;padding:6px 16px;cursor:pointer;color:var(--pu);transition:all .2s;margin-bottom:12px;display:none}
+  .backbtn:hover{background:rgba(155,111,212,.08)}
+  .backbtn.visible{display:inline-flex;align-items:center;gap:6px}
   /* ── View toggle ── */
   .vtoggle{display:flex;gap:8px;justify-content:center;margin-bottom:24px}
   .vbtn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;border:2px solid rgba(155,111,212,.3);border-radius:30px;padding:8px 22px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.6);color:var(--mu)}
@@ -208,6 +212,7 @@
     <button class="vbtn active" id="vbtn-pokemon" onclick="setView('pokemon')">🐾 Pokémon</button>
     <button class="vbtn" id="vbtn-habitat" onclick="setView('habitat')">🏡 Habitats</button>
   </div>
+  <button class="backbtn" id="backbtn" onclick="goBack()">← Back</button>
   <div class="panel">
     <div class="sg">
       <select id="sf" onchange="go()">
@@ -251,15 +256,63 @@
         <option value="NPC">NPC / Unique</option>
       </select>
     </div>
-    <div class="sg" id="ef-wrap" style="max-width:130px">
-      <select id="ef" onchange="go()">
-        <option value="">Environment</option>
-        <option value="Bright">☀️ Bright</option>
-        <option value="Dark">🌑 Dark</option>
-        <option value="Humid">💧 Humid</option>
-        <option value="Dry">🏜️ Dry</option>
-        <option value="Warm">🔥 Warm</option>
-        <option value="neutral">🌿 Neutral</option>
+    <div class="sg" id="pf-wrap" style="max-width:160px">
+      <select id="pf" onchange="go()">
+        <option value="">Preferences</option>
+        <optgroup label="Environment">
+          <option value="env:Bright">☀️ Bright</option>
+          <option value="env:Dark">🌑 Dark</option>
+          <option value="env:Humid">💧 Humid</option>
+          <option value="env:Dry">🏜️ Dry</option>
+          <option value="env:Warm">🔥 Warm</option>
+          <option value="env:Cool">❄️ Cool</option>
+          <option value="env:neutral">🌿 Neutral</option>
+        </optgroup>
+        <optgroup label="Item Likes">
+          <option value="like:Blocky stuff">Blocky stuff</option>
+          <option value="like:Cleanliness">Cleanliness</option>
+          <option value="like:Colourful stuff">Colourful stuff</option>
+          <option value="like:Complicated stuff">Complicated stuff</option>
+          <option value="like:Construction">Construction</option>
+          <option value="like:Containers">Containers</option>
+          <option value="like:Cute stuff">Cute stuff</option>
+          <option value="like:Dirt">Dirt</option>
+          <option value="like:Electronics">Electronics</option>
+          <option value="like:Exercise">Exercise</option>
+          <option value="like:Fabric">Fabric</option>
+          <option value="like:Fire">Fire</option>
+          <option value="like:Garbage">Garbage</option>
+          <option value="like:Gatherings">Gatherings</option>
+          <option value="like:Glass stuff">Glass stuff</option>
+          <option value="like:Group activities">Group activities</option>
+          <option value="like:Hard stuff">Hard stuff</option>
+          <option value="like:Healing">Healing</option>
+          <option value="like:Letters/words">Letters/words</option>
+          <option value="like:Looks like food">Looks like food</option>
+          <option value="like:Luxury">Luxury</option>
+          <option value="like:Metal stuff">Metal stuff</option>
+          <option value="like:Nature">Nature</option>
+          <option value="like:Nice breezes">Nice breezes</option>
+          <option value="like:Noisy stuff">Noisy stuff</option>
+          <option value="like:Ocean vibes">Ocean vibes</option>
+          <option value="like:Play spaces">Play spaces</option>
+          <option value="like:Pretty flowers">Pretty flowers</option>
+          <option value="like:Rides">Rides</option>
+          <option value="like:Round stuff">Round stuff</option>
+          <option value="like:Sharp stuff">Sharp stuff</option>
+          <option value="like:Shiny stuff">Shiny stuff</option>
+          <option value="like:Slender objects">Slender objects</option>
+          <option value="like:Soft stuff">Soft stuff</option>
+          <option value="like:Spinning stuff">Spinning stuff</option>
+          <option value="like:Spooky stuff">Spooky stuff</option>
+          <option value="like:Stone stuff">Stone stuff</option>
+          <option value="like:Strange stuff">Strange stuff</option>
+          <option value="like:Symbols">Symbols</option>
+          <option value="like:Watching stuff">Watching stuff</option>
+          <option value="like:Water">Water</option>
+          <option value="like:Wobbly stuff">Wobbly stuff</option>
+          <option value="like:Wooden stuff">Wooden stuff</option>
+        </optgroup>
       </select>
     </div>
     <div class="sg" style="max-width:130px">
@@ -1359,61 +1412,61 @@ const DB = [
   {n:"215",name:"Abra",              s:["Teleport"]},
   {n:"216",name:"Kadabra",           s:["Teleport"]},
   {n:"217",name:"Alakazam",          s:["Teleport","Trade"]},
-  {n:"???",name:"Ralts",             s:["Teleport"],inf:true},
-  {n:"???",name:"Kirlia",            s:["Teleport"],inf:true},
-  {n:"???",name:"Gardevoir",         s:["Teleport"],inf:true},
-  {n:"???",name:"Gallade",           s:["Chop","Build"],inf:true},
+  {n:"233",name:"Ralts",             s:["Teleport"]},
+  {n:"234",name:"Kirlia",            s:["Teleport"]},
+  {n:"235",name:"Gardevoir",         s:["Teleport","Trade"]},
+  {n:"236",name:"Gallade",           s:["Teleport","Build"]},
   {n:"209",name:"Vulpix",            s:["Burn"]},
   {n:"210",name:"Ninetales",         s:["Burn"]},
   {n:"193",name:"Skwovet",           s:["Search","Hype"],pt:true},
   {n:"???",name:"Greedent",          s:["Gather"],inf:true},
-  {n:"???",name:"Rookidee",          s:["Fly"],inf:true},
-  {n:"???",name:"Corvisquire",       s:["Fly"],inf:true},
-  {n:"???",name:"Corviknight",       s:["Fly"],inf:true},
+  {n:"259",name:"Rookidee",          s:["Chop"]},
+  {n:"260",name:"Corvisquire",       s:["Chop"]},
+  {n:"261",name:"Corviknight",       s:["Chop","Fly"]},
   {n:"223",name:"Dratini",           s:["Water"]},
   {n:"224",name:"Dragonair",         s:["Water"]},
   {n:"225",name:"Dragonite",         s:["Water","Fly"]},
-  {n:"???",name:"Swablu",            s:["Fly","Litter"],inf:true},
-  {n:"???",name:"Altaria",           s:["Fly"],inf:true},
-  {n:"???",name:"Trapinch",          s:["Bulldoze","Litter"],inf:true},
-  {n:"???",name:"Vibrava",           s:["Bulldoze","Fly"],inf:true},
-  {n:"???",name:"Flygon",            s:["Bulldoze","Fly"],inf:true},
-  {n:"???",name:"Duskull",           s:["Gather"],inf:true},
-  {n:"???",name:"Dusclops",          s:["Gather"],inf:true},
-  {n:"???",name:"Dusknoir",          s:["Gather"],inf:true},
-  {n:"???",name:"Dreepy",            s:["Gather","Search"],inf:true},
-  {n:"???",name:"Drakloak",          s:["Gather","Search"],inf:true},
-  {n:"???",name:"Dragapult",         s:["Gather","Trade"],inf:true},
+  {n:"242",name:"Swablu",            s:["Litter"]},
+  {n:"243",name:"Altaria",           s:["Litter","Fly"]},
+  {n:"239",name:"Trapinch",          s:["Bulldoze","Litter"]},
+  {n:"240",name:"Vibrava",           s:["Bulldoze","Fly"]},
+  {n:"241",name:"Flygon",            s:["Bulldoze","Fly"]},
+  {n:"244",name:"Duskull",           s:["Gather"]},
+  {n:"245",name:"Dusclops",          s:["Gather"]},
+  {n:"246",name:"Dusknoir",          s:["Gather","Trade"]},
+  {n:"262",name:"Dreepy",            s:["Gather","Search"]},
+  {n:"263",name:"Drakloak",          s:["Gather","Search"]},
+  {n:"264",name:"Dragapult",         s:["Gather","Trade"]},
   {n:"229",name:"Misdreavus",        s:["Trade"]},
   {n:"230",name:"Mismagius",         s:["Gather","Trade"]},
-  {n:"???",name:"Froakie",           s:["Water"],inf:true},
-  {n:"???",name:"Frogadier",         s:["Water"],inf:true},
-  {n:"???",name:"Greninja",          s:["Water"],inf:true},
-  {n:"???",name:"Snivy",             s:["Grow","Litter"],inf:true},
-  {n:"???",name:"Servine",           s:["Grow","Litter"],inf:true},
-  {n:"???",name:"Serperior",         s:["Grow"],inf:true},
+  {n:"253",name:"Froakie",           s:["Water"]},
+  {n:"254",name:"Frogadier",         s:["Water"]},
+  {n:"255",name:"Greninja",          s:["Water","Chop"]},
+  {n:"250",name:"Snivy",             s:["Grow","Litter"]},
+  {n:"251",name:"Servine",           s:["Grow","Litter"]},
+  {n:"252",name:"Serperior",         s:["Grow","Litter"]},
   {n:"231",name:"Girafarig",         s:["Gather"]},
   {n:"232",name:"Farigiraf",         s:["Gather","Search"]},
   {n:"???",name:"Sprigarito",        s:["Grow"],inf:true},
-  {n:"???",name:"Floragato",         s:["Grow"],inf:true},
-  {n:"???",name:"Meowscarada",       s:["Grow","Chop"],inf:true},
-  {n:"???",name:"Noibat",            s:["Fly"],inf:true},
-  {n:"???",name:"Noivern",           s:["Fly"],inf:true},
-  {n:"???",name:"Wattrel",           s:["Fly"],inf:true},
-  {n:"???",name:"Kilowattrel",       s:["Fly"],inf:true},
+  {n:"266",name:"Floragato",         s:["Grow"]},
+  {n:"267",name:"Meowscarada",       s:["Hype"]},
+  {n:"257",name:"Noibat",            s:["Search"]},
+  {n:"258",name:"Noivern",           s:["Search","Fly"]},
+  {n:"268",name:"Wattrel",           s:["Generate"]},
+  {n:"269",name:"Kilowattrel",       s:["Generate","Fly"]},
   {n:"220",name:"Porygon",           s:["Recycle"]},
   {n:"221",name:"Porygon-2",         s:["Recycle"]},
   {n:"???",name:"Porygon-z",         s:["Rarify"]},
-  {n:"???",name:"Beldum",            s:["Recycle"],inf:true},
-  {n:"???",name:"Metang",            s:["Recycle"],inf:true},
-  {n:"???",name:"Metagross",         s:["Recycle","Crush"],inf:true},
+  {n:"247",name:"Beldum",            s:["Recycle"]},
+  {n:"248",name:"Metang",            s:["Recycle"]},
+  {n:"249",name:"Metagross",         s:["Crush","Recycle"]},
   {n:"200",name:"Fidough",           s:["Search"]},
   {n:"201",name:"Dachsbun",          s:["Search","Trade"]},
   {n:"218",name:"Mime Jr.",          s:["Gather","Build"]},
   {n:"219",name:"Mr. Mime",          s:["Gather","Build"]},
-  {n:"???",name:"Dedenne",           s:["Generate"],inf:true},
-  {n:"???",name:"Plusle",            s:["Generate"],inf:true},
-  {n:"???",name:"Minun",             s:["Generate"],inf:true},
+  {n:"256",name:"Dedenne",           s:["Generate"]},
+  {n:"237",name:"Plusle",            s:["Generate"]},
+  {n:"238",name:"Minun",             s:["Generate"]},
   {n:"172",name:"Pupitar",           s:["Crush","Bulldoze"]},
   {n:"173",name:"Tyranitar",         s:["Crush","Bulldoze"]},
   {n:"185",name:"Larvesta",          s:["Burn","Litter"]},
@@ -1428,19 +1481,19 @@ const DB = [
   // Toxtricity low key merged above,
   {n:"195",name:"Rolycoly",          s:["Burn","Gather"]},
   {n:"196",name:"Carkol",            s:["Burn","Gather"]},
-  {n:"???",name:"Volcanion",         s:["Burn","Water"],inf:true},
+  {n:"289",name:"Volcanion",         s:["Burn","Water"],leg:true},
   {n:"197",name:"Coalossal",         s:["Burn","Gather"]},
-  {n:"???",name:"Tinkatink",         s:["Build"],inf:true},
-  {n:"???",name:"Tinkatuff",         s:["Build"],inf:true},
+  {n:"270",name:"Tinkatink",         s:["Build"]},
+  {n:"271",name:"Tinkatuff",         s:["Build"]},
   {n:"???",name:"Tinkaton",          s:["Build","Crush"],inf:true},
-  {n:"???",name:"Mawile",            s:["Trade","Build"],inf:true},
+  {n:"277",name:"Mawile",            s:["Trade","Build"],pt:true},
   {n:"204",name:"Ceruledge",         s:["Burn"]},
   {n:"203",name:"Armarouge",         s:["Burn"]},
-  {n:"???",name:"Aerodactyl",        s:["Fly"],inf:true},
-  {n:"???",name:"Cranidos",          s:["Crush"],inf:true},
-  {n:"???",name:"Rampardos",         s:["Crush"],inf:true},
-  {n:"???",name:"Shieldon",          s:["Build"],inf:true},
-  {n:"???",name:"Bastiodon",         s:["Build"],inf:true},
+  {n:"272",name:"Aerodactyl",        s:["Fly"]},
+  {n:"273",name:"Cranidos",          s:["Crush"]},
+  {n:"274",name:"Rampardos",         s:["Crush","Litter"]},
+  {n:"275",name:"Shieldon",          s:["Crush"]},
+  {n:"276",name:"Bastiodon",         s:["Crush","Litter"]},
   {n:"???",name:"Tyrunt",            s:["Crush"],inf:true},
   {n:"???",name:"Tyrantrum",         s:["Crush"],inf:true},
   {n:"???",name:"Amaura",            s:["Water"],inf:true},
@@ -1453,21 +1506,21 @@ const DB = [
   {n:"???",name:"Leafeon",           s:["Grow"],       pt:true},
   {n:"???",name:"Glaceon",           s:["Water","Trade"],pt:true},
   {n:"???",name:"Sylveon",           s:["Hype"],       pt:true},
-  {n:"???",name:"Hoppip",            s:["Fly"],inf:true},
-  {n:"???",name:"Skiploom",          s:["Fly"],inf:true},
-  {n:"???",name:"Jumpluff",          s:["Fly"],inf:true},
+  {n:"278",name:"Hoppip",            s:["Grow"]},
+  {n:"279",name:"Skiploom",          s:["Grow"]},
+  {n:"280",name:"Jumpluff",          s:["Grow","Litter"]},
   {n:"299",name:"Mewtwo",           s:["Teleport"],leg:true},
   // ─ LEGENDARIES (special locations, not standard habitats) ─
-  {n:"???",name:"Raikou",            s:["Generate"],inf:true,leg:true},
-  {n:"???",name:"Entei",             s:["Burn"],    inf:true,leg:true},
-  {n:"???",name:"Suicune",           s:["Water"],   inf:true,leg:true},
-  {n:"???",name:"Articuno",          s:["Fly"],     inf:true,leg:true},
-  {n:"???",name:"Zapdos",            s:["Fly","Generate"],inf:true,leg:true},
-  {n:"???",name:"Moltres",           s:["Fly","Burn"],inf:true,leg:true},
-  {n:"???",name:"Lugia",             s:["Fly","Water"],inf:true,leg:true},
-  {n:"???",name:"Ho-oh",             s:["Fly","Burn"],inf:true,leg:true},
-  {n:"???",name:"Kyogre",            s:["Water"],   inf:true,leg:true},
-  {n:"???",name:"Mew",               s:[],          inf:true,leg:true},
+  {n:"291",name:"Raikou",            s:["Generate"],leg:true},
+  {n:"292",name:"Entei",             s:["Burn"],leg:true},
+  {n:"293",name:"Suicune",           s:["Water"],leg:true},
+  {n:"294",name:"Articuno",          s:["Fly"],leg:true},
+  {n:"295",name:"Zapdos",            s:["Fly","Generate"],leg:true},
+  {n:"296",name:"Moltres",           s:["Fly","Burn"],leg:true},
+  {n:"297",name:"Lugia",             s:["Fly","Water"],leg:true},
+  {n:"298",name:"Ho-oh",             s:["Fly","Burn"],leg:true},
+  {n:"300",name:"Kyogre",            s:["Water"],leg:true},
+  {n:"301",name:"Mew",               s:["Teleport"],leg:true},
   // ─ NPC / UNIQUE ─
   {n:"npc",name:"Dj Rotom",          s:["DJ"],      npc:true},
   {n:"npc",name:"Tinkmaster",        s:["Engineer"],npc:true},
@@ -1848,11 +1901,227 @@ const ENV = {
   "Victreebel":{h:"Humid"},
   "Wartortle":{h:"Humid"},
   "Weepinbell":{h:"Humid"},
-  "Wingull":{h:"Humid"}
+  "Wingull":{h:"Humid"},
+  "Articuno":{l:"Cool"},
+  "Glaceon":{l:"Cool"},
+  "Meowth":{l:"Cool"},
+  "Persian":{l:"Cool"},
+  "Abra":{l:"Dark"},
+  "Aerodactyl":{l:"Bright"},
+  "Alakazam":{l:"Dark"},
+  "Altaria":{l:"Bright"},
+  "Amaura":{h:"Humid"},
+  "Arbok":{l:"Dark"},
+  "Armarouge":{t:"Warm"},
+  "Audino":{l:"Bright"},
+  "Aurorus":{h:"Humid"},
+  "Axew":{l:"Dark"},
+  "Bastiodon":{h:"Dry"},
+  "Beldum":{l:"Bright"},
+  "Blissey":{l:"Bright"},
+  "Carkol":{t:"Warm"},
+  "Ceruledge":{t:"Warm"},
+  "Chandelure":{l:"Dark"},
+  "Chansey":{l:"Bright"},
+  "Charcadet":{t:"Warm"},
+  "Charjabug":{h:"Humid"},
+  "Chef Dente":{l:"Bright"},
+  "Cinccino":{l:"Bright"},
+  "Cinderace":{t:"Warm"},
+  "Clefable":{l:"Dark"},
+  "Clefairy":{l:"Dark"},
+  "Cleffa":{l:"Dark"},
+  "Coalossal":{t:"Warm"},
+  "Conkeldurr":{l:"Bright"},
+  "Corviknight":{l:"Bright"},
+  "Corvisquire":{l:"Bright"},
+  "Cramorant":{h:"Humid"},
+  "Cranidos":{h:"Dry"},
+  "Crobat":{l:"Dark"},
+  "Cyndaquil":{t:"Warm"},
+  "Dachsbun":{l:"Bright"},
+  "Dartrix":{l:"Bright"},
+  "Decidueye":{l:"Bright"},
+  "Dedenne":{l:"Bright"},
+  "Diglett":{l:"Dark"},
+  "Ditto":{l:"Bright"},
+  "Dj Rotom":{l:"Bright"},
+  "Dragapult":{l:"Dark"},
+  "Dragonair":{h:"Humid"},
+  "Dragonite":{h:"Humid"},
+  "Drakloak":{l:"Dark"},
+  "Dratini":{h:"Humid"},
+  "Dreepy":{l:"Dark"},
+  "Dugtrio":{l:"Dark"},
+  "Dusclops":{l:"Dark"},
+  "Dusknoir":{l:"Dark"},
+  "Duskull":{l:"Dark"},
+  "Eevee":{l:"Bright"},
+  "Ekans":{l:"Dark"},
+  "Electabuzz":{l:"Bright"},
+  "Electivire":{l:"Bright"},
+  "Electrode":{l:"Bright"},
+  "Elekid":{l:"Bright"},
+  "Empoleon":{h:"Humid"},
+  "Espeon":{l:"Bright"},
+  "Exeggcute":{l:"Bright"},
+  "Exeggutor":{l:"Bright"},
+  "Farigiraf":{l:"Bright"},
+  "Fidough":{l:"Bright"},
+  "Flareon":{t:"Warm"},
+  "Floragato":{l:"Bright"},
+  "Flygon":{h:"Dry"},
+  "Fraxure":{l:"Dark"},
+  "Froakie":{h:"Humid"},
+  "Frogadier":{h:"Humid"},
+  "Gallade":{l:"Dark"},
+  "Garbodor":{h:"Humid"},
+  "Gardevoir":{l:"Dark"},
+  "Gastly":{l:"Dark"},
+  "Gastrodon (east Sea)":{h:"Humid"},
+  "Gastrodon (west Sea)":{h:"Humid"},
+  "Gengar":{l:"Dark"},
+  "Geodude":{h:"Dry"},
+  "Gholdengo":{l:"Bright"},
+  "Gimmighoul":{l:"Dark"},
+  "Girafarig":{l:"Bright"},
+  "Glimmet":{l:"Dark"},
+  "Glimmora":{l:"Dark"},
+  "Golbat":{l:"Dark"},
+  "Golduck":{h:"Humid"},
+  "Goomy":{h:"Humid"},
+  "Greninja":{h:"Humid"},
+  "Grimer":{h:"Humid"},
+  "Grubbin":{h:"Humid"},
+  "Gurdurr":{l:"Bright"},
+  "Gyarados":{h:"Humid"},
+  "Happiny":{l:"Bright"},
+  "Haunter":{l:"Dark"},
+  "Haxorus":{l:"Dark"},
+  "Heracross":{l:"Bright"},
+  "Hitmontop":{l:"Bright"},
+  "Honchkrow":{l:"Dark"},
+  "Hoothoot":{l:"Dark"},
+  "Igglybuff":{l:"Bright"},
+  "Illumise":{l:"Dark"},
+  "Jigglypuff":{l:"Bright"},
+  "Jolteon":{l:"Bright"},
+  "Kadabra":{l:"Dark"},
+  "Kilowattrel":{l:"Bright"},
+  "Kirlia":{l:"Dark"},
+  "Koffing":{l:"Dark"},
+  "Lampent":{l:"Dark"},
+  "Larvesta":{t:"Warm"},
+  "Larvitar":{h:"Dry"},
+  "Leafeon":{l:"Bright"},
+  "Litwick":{l:"Dark"},
+  "Lucario":{l:"Bright"},
+  "Machamp":{l:"Bright"},
+  "Machoke":{l:"Bright"},
+  "Machop":{l:"Bright"},
+  "Magikarp":{h:"Humid"},
+  "Magnezone":{l:"Bright"},
+  "Mareep":{l:"Bright"},
+  "Mawile":{l:"Bright"},
+  "Meowscarada":{l:"Bright"},
+  "Metagross":{l:"Bright"},
+  "Metang":{l:"Bright"},
+  "Mew":{l:"Bright"},
+  "Mewtwo":{l:"Dark"},
+  "Mime Jr.":{l:"Bright"},
+  "Mimikyu":{l:"Dark"},
+  "Minccino":{l:"Bright"},
+  "Minun":{l:"Bright"},
+  "Misdreavus":{l:"Dark"},
+  "Mismagius":{l:"Dark"},
+  "Moltres":{t:"Warm"},
+  "Mosslax":{l:"Bright"},
+  "Mr. Mime":{l:"Bright"},
+  "Muk":{h:"Humid"},
+  "Murkrow":{l:"Dark"},
+  "Ninetales":{t:"Warm"},
+  "Noctowl":{l:"Dark"},
+  "Noibat":{l:"Dark"},
+  "Noivern":{l:"Dark"},
+  "Pawmi":{l:"Bright"},
+  "Pawmo":{l:"Bright"},
+  "Pawmot":{l:"Bright"},
+  "Peakychu":{l:"Bright"},
+  "Pidgeot":{l:"Bright"},
+  "Plusle":{l:"Bright"},
+  "Politoed":{h:"Humid"},
+  "Poliwag":{h:"Humid"},
+  "Poliwhirl":{h:"Humid"},
+  "Poliwrath":{h:"Humid"},
+  "Porygon":{l:"Bright"},
+  "Porygon-2":{l:"Bright"},
+  "Porygon-z":{l:"Bright"},
+  "Prinplup":{h:"Humid"},
+  "Pupitar":{h:"Dry"},
+  "Quilava":{t:"Warm"},
+  "Raboot":{t:"Warm"},
+  "Ralts":{l:"Dark"},
+  "Rampardos":{h:"Dry"},
+  "Rolycoly":{t:"Warm"},
+  "Rookidee":{l:"Bright"},
+  "Rowlet":{l:"Bright"},
+  "Scizor":{l:"Bright"},
+  "Scorbunny":{t:"Warm"},
+  "Serperior":{l:"Bright"},
+  "Servine":{l:"Bright"},
+  "Shellos (east Sea)":{h:"Humid"},
+  "Shellos (west Sea)":{h:"Humid"},
+  "Shieldon":{h:"Dry"},
+  "Skwovet":{l:"Bright"},
+  "Snivy":{l:"Bright"},
+  "Snorlax":{t:"Warm"},
+  "Steelix":{h:"Dry"},
+  "Swablu":{l:"Bright"},
+  "Sylveon":{l:"Bright"},
+  "Tangela":{h:"Humid"},
+  "Tatsugiri (curly)":{h:"Humid"},
+  "Tatsugiri (droopy)":{h:"Humid"},
+  "Tatsugiri (stretchy)":{h:"Humid"},
+  "Tinkatink":{l:"Bright"},
+  "Tinkaton":{l:"Bright"},
+  "Tinkatuff":{l:"Bright"},
+  "Toxel":{l:"Bright"},
+  "Toxtricity":{h:"Humid"},
+  "Trapinch":{h:"Dry"},
+  "Trubbish":{h:"Humid"},
+  "Typhlosion":{t:"Warm"},
+  "Tyranitar":{h:"Dry"},
+  "Tyrantrum":{l:"Dark"},
+  "Tyrogue":{l:"Bright"},
+  "Tyrunt":{l:"Dark"},
+  "Umbreon":{l:"Dark"},
+  "Vaporeon":{h:"Humid"},
+  "Venomoth":{l:"Bright"},
+  "Venonat":{l:"Bright"},
+  "Vespiquen":{l:"Bright"},
+  "Vibrava":{h:"Dry"},
+  "Vikavolt":{h:"Humid"},
+  "Vileplume":{h:"Humid"},
+  "Volbeat":{l:"Dark"},
+  "Volcanion":{t:"Warm"},
+  "Volcarona":{t:"Warm"},
+  "Voltorb":{l:"Bright"},
+  "Vulpix":{t:"Warm"},
+  "Wattrel":{l:"Bright"},
+  "Weezing":{l:"Dark"},
+  "Wigglytuff":{l:"Bright"},
+  "Zapdos":{l:"Bright"},
+  "Zoroark":{l:"Dark"},
+  "Zorua":{l:"Dark"},
+  "Zubat":{l:"Dark"},
+  "Gastrodon":{h:"Humid"},
+  "Greedent":{l:"Bright"},
+  "Shellos":{h:"Humid"},
+  "Sprigarito":{l:"Bright"}
 };
 function getEnv(name){return ENV[name]||{};}
 
-function envIcon(e){return e==='Bright'?'☀️ ':e==='Dark'?'🌑 ':e==='Humid'?'💧 ':e==='Dry'?'🏜️ ':e==='Warm'?'🔥 ':'';}
+function envIcon(e){return e==='Bright'?'☀️ ':e==='Dark'?'🌑 ':e==='Humid'?'💧 ':e==='Dry'?'🏜️ ':e==='Warm'?'🔥 ':e==='Cool'?'❄️ ':'';}
 function rarityStars(r) {
   if(!r) return '';
   return '<span class="rstar r'+r+'">'+'★'.repeat(r)+'</span>';
@@ -1961,6 +2230,8 @@ const ZONE_NAMES = {WW:"Withered Wastelands",BB:"Bleak Beach",RR:"Rocky Ridges",
 const LOC_LABELS = {pt:"🏙️ Palette Town only",event:"⭐ Event only"};
 
 let currentView = 'pokemon';
+let navHistory = [];
+
 
 function setView(v) {
   currentView = v;
@@ -1971,7 +2242,7 @@ function setView(v) {
   document.getElementById('tf').closest('.sg').style.display = v==='habitat' ? 'none' : '';
   document.getElementById('wf').closest('.sg').style.display = v==='habitat' ? 'none' : '';
   document.getElementById('sf').closest('.sg').style.display = v==='habitat' ? 'none' : '';
-  document.getElementById('ef-wrap').style.display = v==='habitat' ? 'none' : '';
+  document.getElementById('pf-wrap').style.display = v==='habitat' ? 'none' : '';
   document.getElementById('cf-wrap').style.display = v==='habitat' ? '' : 'none';
   document.getElementById('rf-wrap').style.display = v==='habitat' ? '' : 'none';
   document.getElementById('nf').placeholder = v==='habitat' ? 'Pokémon or habitat name…' : 'Pokémon name…';
@@ -2035,7 +2306,7 @@ function habCard(slug, h, delay) {
 }
 
 function navToHabitat(slug) {
-  ['sf','nf','zf','tf','wf','ef','cf','rf'].forEach(id => document.getElementById(id).value='');
+  ['sf','nf','zf','tf','wf','pf','cf','rf'].forEach(id => document.getElementById(id).value='');
   setView('habitat');
   // exact slug match — filter inline
   const g = document.getElementById('grid');
@@ -2045,7 +2316,7 @@ function navToHabitat(slug) {
 }
 
 function navToPokemon(name) {
-  ['sf','nf','zf','tf','wf','ef','cf','rf'].forEach(id => document.getElementById(id).value='');
+  ['sf','nf','zf','tf','wf','pf','cf','rf'].forEach(id => document.getElementById(id).value='');
   setView('pokemon');
   // exact name match
   const g = document.getElementById('grid');
@@ -2056,6 +2327,25 @@ function navToPokemon(name) {
     return;
   }
   g.innerHTML = res.map((p,i) => card(p, i*20)).join('');
+}
+
+function goBack() {
+  if (!navHistory.length) return;
+  const prev = navHistory.pop();
+  currentView = prev.view;
+  document.getElementById('vbtn-pokemon').classList.toggle('active', prev.view==='pokemon');
+  document.getElementById('vbtn-habitat').classList.toggle('active', prev.view==='habitat');
+  document.getElementById('grid').classList.toggle('hview', prev.view==='habitat');
+  document.getElementById('grid').innerHTML = prev.html;
+  document.getElementById('rc').innerHTML = prev.rc;
+  // show/hide filters
+  document.getElementById('tf').closest('.sg').style.display = prev.view==='habitat' ? 'none' : '';
+  document.getElementById('wf').closest('.sg').style.display = prev.view==='habitat' ? 'none' : '';
+  document.getElementById('sf').closest('.sg').style.display = prev.view==='habitat' ? 'none' : '';
+  document.getElementById('pf-wrap').style.display = prev.view==='habitat' ? 'none' : '';
+  document.getElementById('cf-wrap').style.display = prev.view==='habitat' ? '' : 'none';
+  document.getElementById('rf-wrap').style.display = prev.view==='habitat' ? '' : 'none';
+  if (!navHistory.length) document.getElementById('backbtn').classList.remove('visible');
 }
 
 function goHabitat() {
@@ -2089,7 +2379,8 @@ function go() {
   const zn = document.getElementById('zf').value;
   const tf = document.getElementById('tf').value;
   const wf = document.getElementById('wf').value;
-  const ef = document.getElementById('ef').value;
+  const pf = document.getElementById('pf').value;
+  const [pfType, pfVal] = pf ? pf.split(':') : ['',''];
   const res = DB.filter(p => {
     const ms = !sp || p.s.includes(sp);
     const mn = !nm || p.name.toLowerCase().includes(nm);
@@ -2110,8 +2401,11 @@ function go() {
       wf==='R' ? (w==='A'||w==='R') : true);
     const env = getEnv(p.name);
     const envVals = [env.l, env.h, env.t].filter(Boolean);
-    const me = !ef || (ef==='neutral' ? envVals.length===0 : envVals.includes(ef));
-    return ms && mn && mz && mt && mw && me;
+    const mp = !pf || (
+      pfType==='env' ? (pfVal==='neutral' ? envVals.length===0 : envVals.includes(pfVal)) :
+      pfType==='like' ? (FAVITEMS[p.name] && FAVITEMS[p.name].some(f => f.toLowerCase()===pfVal.toLowerCase())) :
+      true);
+    return ms && mn && mz && mt && mw && mp;
   });
   const g = document.getElementById('grid');
   document.getElementById('rc').innerHTML = `<strong>${res.length}</strong> Pokémon`;
@@ -2122,7 +2416,7 @@ function go() {
   g.innerHTML = res.map((p,i) => card(p, i*20)).join('');
 }
 function clr() {
-  ['sf','nf','zf','tf','wf','ef','cf','rf'].forEach(id => document.getElementById(id).value='');
+  ['sf','nf','zf','tf','wf','pf','cf','rf'].forEach(id => document.getElementById(id).value='');
   go();
 }
 // nf now uses oninput for live filtering
